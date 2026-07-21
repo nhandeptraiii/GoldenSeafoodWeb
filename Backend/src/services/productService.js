@@ -43,8 +43,16 @@ const getProducts = async (query = {}) => {
     },
   ];
 
-  // Filter by category slug
-  if (query.category) {
+  // Filter by category_id (trực tiếp qua FK — nhanh hơn)
+  if (query.category_id) {
+    const parsedId = parseInt(query.category_id, 10);
+    if (!isNaN(parsedId)) {
+      whereClause.category_id = parsedId;
+    }
+  }
+
+  // Filter by category slug (giữ nguyên để backward-compatible)
+  if (query.category && !query.category_id) {
     includeClause[0].where = { slug: query.category };
   }
 

@@ -76,4 +76,36 @@ const uploadProductImage = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB cho ảnh
 });
 
-module.exports = { uploadSpec, uploadProductImage };
+// Storage config cho category icons
+const categoryIconStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads', 'categories');
+    ensureDir(uploadDir);
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, uniqueSuffix + ext);
+  },
+});
+
+const iconFileFilter = (req, file, cb) => {
+  const allowedTypes = ['.svg', '.png', '.jpg', '.jpeg', '.webp'];
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (allowedTypes.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`File type '${ext}' is not allowed. Allowed: ${allowedTypes.join(', ')}`), false);
+  }
+};
+
+// Upload middleware cho category icons
+const uploadCategoryIcon = multer({
+  storage: categoryIconStorage,
+  fileFilter: iconFileFilter,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB cho icon
+});
+
+module.exports = { uploadSpec, uploadProductImage, uploadCategoryIcon };

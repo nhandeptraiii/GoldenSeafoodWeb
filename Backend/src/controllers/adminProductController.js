@@ -329,13 +329,16 @@ const uploadImage = async (req, res, next) => {
     }
 
     const relativePath = path.join('uploads', 'products', req.file.filename).replace(/\\/g, '/');
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const fullUrl = `${baseUrl}/${relativePath}`;
 
     res.status(201).json({
       success: true,
       message: 'Image uploaded successfully',
       data: {
         filename: req.file.filename,
-        url: relativePath,
+        url: fullUrl,
+        relative_url: relativePath,
       },
     });
   } catch (error) {

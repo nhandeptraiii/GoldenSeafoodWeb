@@ -1,6 +1,7 @@
 const { Category, Product } = require('../models');
 const { generateUniqueSlug } = require('../utils/slugify');
 const { body } = require('express-validator');
+const path = require('path');
 
 const validateCategory = [
   body('name_en').trim().notEmpty().withMessage('English name is required'),
@@ -143,10 +144,42 @@ const deleteCategory = async (req, res, next) => {
   }
 };
 
+/**
+ * @route POST /api/admin/categories/upload-icon
+ * @desc Upload icon for a category (SVG, PNG, WebP)
+ */
+const uploadCategoryIcon = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No icon file uploaded',
+      });
+    }
+
+    const relativePath = path.join('uploads', 'categories', req.file.filename).replace(/\\/g, '/');
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const fullUrl = `${baseUrl}/${relativePath}`;
+
+    res.status(201).json({
+      success: true,
+      message: 'Icon uploaded successfully',
+      data: {
+        filename: req.file.filename,
+        url: fullUrl,
+        relative_url: relativePath,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateCategory,
   getAllAdminCategories,
   createCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryIcon,
 };

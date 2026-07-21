@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { authenticateAdmin } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validate');
-const { uploadProductImage } = require('../config/multer');
+const { uploadProductImage, uploadCategoryIcon } = require('../config/multer');
 
 const adminAuthController = require('../controllers/adminAuthController');
 const adminCategoryController = require('../controllers/adminCategoryController');
@@ -26,6 +26,11 @@ router.get('/me', adminAuthController.getMe);
 
 // Categories Management
 router.get('/categories', adminCategoryController.getAllAdminCategories);
+router.post(
+  '/categories/upload-icon',
+  uploadCategoryIcon.single('icon'),
+  adminCategoryController.uploadCategoryIcon
+);
 router.post(
   '/categories',
   adminCategoryController.validateCategory,
