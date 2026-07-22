@@ -1,0 +1,56 @@
+.header {
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.center {
+  text-align: center;
+}
+
+.center .eyebrow {
+  border-left: 0;
+  border-bottom: 2px solid var(--gs-secondary);
+  padding: 0 0 8px;
+}
+
+.center .title,
+.center .subtitle {
+  // color: ư;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.right {
+  text-align: right;
+}
+
+.right .title,
+.right .subtitle {
+  margin-left: auto;
+}
+
+.eyebrow {
+  color: var(--gs-secondary-dark);
+  letter-spacing: 0.18em;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-left: 3px solid var(--gs-secondary);
+  padding: 2px 0 2px 11px;
+}
+
+.title {
+  color: var(--gs-primary);
+  max-width: 760px;
+  margin: 12px 0 13px;
+  font-size: clamp(2.35rem, 4vw, 4rem);
+  line-height: 1.05;
+  font-weight: 650;
+  letter-spacing: -.04em;
+}
+
+.subtitle {
+  max-width: 760px;
+  line-height: 1.7;
+}

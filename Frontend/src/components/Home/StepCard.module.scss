@@ -1,0 +1,10 @@
+.card { position: relative; z-index: 2; height: 100%; padding: 24px 20px 26px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.14); text-align: center; transition: transform .28s ease, box-shadow .28s ease, border-color .35s ease, background .35s ease; }
+.card:hover, .active { transform: translateY(-7px); border-color: var(--gs-secondary); background: rgba(255,255,255,.09); box-shadow: 0 20px 42px rgba(0,0,0,.2); }
+.imageWrap { width: 112px; height: 112px; margin: 0 auto 18px; border-radius: 50%; overflow: hidden; background: var(--gs-gold-soft); }
+.imageWrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease, filter .35s ease; filter: saturate(.72); }
+.card:hover img, .active img { transform: scale(1.06); filter: saturate(1); }
+.number { margin: 0 0 9px; color: var(--gs-secondary-dark); font-size: .68rem; font-weight: 800; letter-spacing: .15em; }
+.card h3 { min-height: 46px; margin: 0 0 10px; color: #fff; font-size: 1rem; line-height: 1.4; }
+.description { margin: 0; color: rgba(255,255,255,.66); font-size: .82rem; line-height: 1.65; }
+@media (max-width: 900px) { .card { display: grid; grid-template-columns: 92px 42px 1fr; grid-template-rows: auto 1fr; column-gap: 18px; text-align: left; } .imageWrap { grid-row: 1 / 3; width: 92px; height: 92px; margin: 0; } .number { grid-column: 2; grid-row: 1 / 3; padding-top: 4px; } .card h3 { grid-column: 3; min-height: 0; margin: 0 0 8px; } .description { grid-column: 3; } }
+@media (max-width: 520px) { .card { grid-template-columns: 72px 1fr; column-gap: 15px; } .imageWrap { width: 72px; height: 72px; } .number { display: none; } .card h3, .description { grid-column: 2; } }

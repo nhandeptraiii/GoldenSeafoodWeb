@@ -1,0 +1,612 @@
+{
+  "info": {
+    "_postman_id": "42df1eec-34a7-421f-bb96-5579f5b81ca0",
+    "name": "Golden Seafood B2B - Full API Collection v1.0",
+    "description": "Bộ sưu tập Postman chuẩn v2.1 đầy đủ tất cả các APIs cho hệ thống B2B Xuất Khẩu Thủy Hải Sản Golden Seafood Co., Ltd.\n\nBao gồm 2 nhóm chính:\n1. **Public APIs**: Dành cho Khách mua hàng quốc tế (International Buyers) & Frontend Web (Lọc AJAX, Trang chi tiết, Giỏ báo giá Inquiry Basket, Upload file).\n2. **Admin Portal APIs**: Dành cho Ban Giám Đốc & Sourcing Team quản trị Sản phẩm, Thông số kỹ thuật động và Cập nhật trạng thái báo giá (`new` -> `processing` -> `quoted` -> `closed`).\n\n💡 **Cách sử dụng nhanh**:\n- Chạy API `[Admin] 1. Login to Portal` trước với tài khoản `admin / Admin@2026`. Script Postman tự động lưu JWT Token vào biến `{{jwt_token}}` để dùng cho toàn bộ các API Admin phía sau!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Public APIs (Khách Hàng & Frontend Web)",
+      "description": "Các endpoint công khai phục vụ giao diện trang web khách hàng B2B, lọc sản phẩm AJAX, giỏ hàng báo giá và gửi form liên hệ.",
+      "item": [
+        {
+          "name": "[Public] 1. Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}",
+              "host": ["{{base_url}}"]
+            },
+            "description": "Kiểm tra trạng thái máy chủ Backend API và thời gian hoạt động (uptime)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 2. Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Lấy danh sách 5 danh mục chính (`Shrimp`, `Cephalopods`, `Marine Fish`...) kèm số lượng sản phẩm đang hoạt động (`productCount`). Dùng để render Menu trượt hoặc Sidebar bộ lọc trên trang Sản phẩm."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 3. Get Products List (AJAX Filter & Search)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?page=1&limit=9&category_id=1&type=value_added&search=",
+              "host": ["{{base_url}}"],
+              "path": ["products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Số trang (1-indexed)"
+                },
+                {
+                  "key": "limit",
+                  "value": "9",
+                  "description": "Số lượng sản phẩm trên mỗi trang"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "description": "Lọc theo ID danh mục (VD: 1 = Shrimp)"
+                },
+                {
+                  "key": "type",
+                  "value": "value_added",
+                  "description": "Lọc theo quy cách chế biến: raw | cooked | value_added"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Tìm kiếm theo từ khóa song ngữ Anh/Việt (VD: vannamei hoặc tôm thẻ)"
+                }
+              ]
+            },
+            "description": "Lấy danh sách sản phẩm hỗ trợ bộ lọc AJAX (không reload trang), phân trang chuẩn và tìm kiếm từ khóa song ngữ. Trả về mảng `products` và metadata `pagination`."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 4. Get Featured Products (Trang Chủ)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/featured",
+              "host": ["{{base_url}}"],
+              "path": ["products", "featured"]
+            },
+            "description": "Lấy danh sách các sản phẩm nổi bật (`is_featured: true`) để hiển thị tại section 'Our Premium Products' trên Trang Chủ."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 5. Get Product Details by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/frozen-vannamei-shrimp-breaded",
+              "host": ["{{base_url}}"],
+              "path": ["products", "frozen-vannamei-shrimp-breaded"]
+            },
+            "description": "Lấy chi tiết đầy đủ của 1 sản phẩm theo URL `slug`. Trả về hình ảnh gallery (`images`) và bảng thông số kỹ thuật động song ngữ (`specifications` - Scientific Name, Origin, Size/Counting, Freezing Method...) đã sắp xếp theo thứ tự ưu tiên."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 6. Submit Contact Form Inquiry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"John Smith\",\n  \"company_name\": \"Global Seafoods Inc.\",\n  \"email\": \"john@globalseafoods.com\",\n  \"country\": \"United States\",\n  \"whatsapp_number\": \"+1-555-0192\",\n  \"interested_species\": [\"Vannamei Shrimp\", \"Black Tiger Shrimp\"],\n  \"message\": \"Looking for 20ft container of IQF breaded shrimp for Q4 delivery. Please advise current FOB HCM pricing.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inquiries/contact",
+              "host": ["{{base_url}}"],
+              "path": ["inquiries", "contact"]
+            },
+            "description": "Gửi form yêu cầu liên hệ nhanh (`Contact Form`). Tự động lưu database, sinh mã báo giá `GS-YYYYMMDD-XXX` và kích hoạt luồng email tự động."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 7. Submit Inquiry Basket (Giỏ Hàng Báo Giá B2B)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Elena Rostova\",\n  \"job_title\": \"Procurement Manager\",\n  \"company_name\": \"Vostok Seafood Trading\",\n  \"email\": \"elena@vostokseafood.ru\",\n  \"country\": \"Russia\",\n  \"whatsapp_number\": \"+7-999-123-4567\",\n  \"destination_port\": \"St. Petersburg Port\",\n  \"message\": \"Need mixed container quote. Please include target freight rates and lead time.\",\n  \"special_requirements\": \"All boxes must have Russian language labels and EAC conformity marks. Inner plastic bag liner required.\",\n  \"attachment_url\": \"uploads/specs/buyer-specsheet-sample.pdf\",\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"product_name\": \"Frozen Vannamei Shrimp - Breaded\",\n      \"quantity\": 25,\n      \"specifications\": \"Size 16/20, IQF, Glazing 10%, Bulk carton 10kg\",\n      \"notes\": \"Need ASC certificate copy attached with Proforma Invoice\"\n    },\n    {\n      \"product_id\": 4,\n      \"product_name\": \"Whole Cleaned Squid - Frozen\",\n      \"quantity\": 15,\n      \"specifications\": \"Size 8/12 cm, IQF, Glazing 5%, Block 7.5kg\",\n      \"notes\": \"Standard master carton 15kg\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inquiries/basket",
+              "host": ["{{base_url}}"],
+              "path": ["inquiries", "basket"]
+            },
+            "description": "🔥 **API cốt lõi B2B**: Khách hàng gom N sản phẩm vào Giỏ Hàng Báo Giá (`Inquiry Basket`) và bấm gửi. Hệ thống tự động ghi nhận transaction, tạo snapshot tên & spec từng sản phẩm vào bảng `inquiry_items`, sinh mã định danh và gửi email kép (Auto-reply cho buyer + Alert khẩn cấp cho sales `binh@goldenseafood.com.vn`)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Public] 8. Upload Spec Sheet / Attachment File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/upload",
+              "host": ["{{base_url}}"],
+              "path": ["upload"]
+            },
+            "description": "Khách hàng upload file spec sheet, bảng yêu cầu đóng gói hoặc hình ảnh tham khảo (Tối đa 10MB: `.pdf`, `.docx`, `.xlsx`, `.jpg`, `.png`). Trả về đường dẫn `data.url` để truyền vào field `attachment_url` khi gửi Giỏ Báo Giá."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Admin Portal APIs (Quản Trị Ban Giám Đốc & Sourcing Team)",
+      "description": "Các endpoint yêu cầu quyền quản trị (Header `Authorization: Bearer {{jwt_token}}`). Dùng để quản lý danh mục, sản phẩm, bảng thông số kỹ thuật động và duyệt đơn hỏi hàng.",
+      "item": [
+        {
+          "name": "[Admin] 1. Login to Portal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set(\"jwt_token\", jsonData.data.token);",
+                  "    console.log(\"✅ JWT Token đã được lưu tự động vào biến collection: {{jwt_token}}\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@2026\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "login"]
+            },
+            "description": "Đăng nhập tài khoản Admin (`admin / Admin@2026`). Script tự động trích xuất token `data.token` và lưu vào biến `{{jwt_token}}` để sử dụng cho toàn bộ các request protected bên dưới!"
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 2. Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/me",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "me"]
+            },
+            "description": "Lấy thông tin tài khoản admin đang đăng nhập."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 3. Get All Categories (Admin View)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/categories",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "categories"]
+            },
+            "description": "Lấy toàn bộ danh mục (bao gồm cả các danh mục đang bị ẩn `is_active: false`) kèm đếm số sản phẩm liên kết."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 4. Create New Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_en\": \"Tuna & Pelagic Fish\",\n  \"name_vi\": \"Cá ngừ & Cá biển khơi\",\n  \"icon_url\": \"https://images.unsplash.com/photo-tuna-sample\",\n  \"sort_order\": 6,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/categories",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "categories"]
+            },
+            "description": "Thêm danh mục sản phẩm mới vào hệ thống."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 5. Update Category by ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_en\": \"Tuna & Pelagic Fish (Premium)\",\n  \"name_vi\": \"Cá ngừ & Cá biển khơi cao cấp\",\n  \"sort_order\": 6,\n  \"is_active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "categories", "1"]
+            },
+            "description": "Cập nhật thông tin danh mục theo ID."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 6. Delete Category by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/categories/999",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "categories", "999"]
+            },
+            "description": "Xóa danh mục (Chỉ cho phép xóa nếu danh mục đó không có sản phẩm nào liên kết để bảo toàn dữ liệu)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 7. Get All Products (Admin View with Search & Filter)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/products?page=1&limit=20&search=",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Lấy danh sách toàn bộ sản phẩm cho giao diện quản trị (bao gồm cả sản phẩm ẩn `is_active: false`)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 8. Get Product Detail with Specifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products", "1"]
+            },
+            "description": "Lấy chi tiết 1 sản phẩm kèm toàn bộ danh sách hình ảnh gallery và bảng thông số kỹ thuật `specifications`."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 9. Create Product with Dynamic Specifications Table",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name_en\": \"Frozen Nobashi Ebi (Stretched Shrimp)\",\n  \"name_vi\": \"Tôm Nobashi duỗi đông lạnh (Dành cho nhà hàng Tempura)\",\n  \"short_desc_en\": \"Stretched ready-to-fry Vannamei shrimp, perfectly straightened for Japanese Tempura dishes.\",\n  \"short_desc_vi\": \"Tôm thẻ duỗi sẵn sàng cho chiên Tempura kiểu Nhật Bản, độ thẳng hoàn hảo, tiện dụng.\",\n  \"thumbnail_url\": \"https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800\",\n  \"product_type\": \"value_added\",\n  \"is_featured\": true,\n  \"is_active\": true,\n  \"sort_order\": 5,\n  \"specifications\": [\n    {\n      \"spec_key_en\": \"Scientific Name\",\n      \"spec_key_vi\": \"Tên khoa học\",\n      \"spec_value\": \"Litopenaeus vannamei\",\n      \"sort_order\": 1\n    },\n    {\n      \"spec_key_en\": \"Size / Length\",\n      \"spec_key_vi\": \"Kích cỡ / Chiều dài\",\n      \"spec_value\": \"2L (13-14 cm), 3L (14-15 cm), 4L (15-16 cm)\",\n      \"sort_order\": 2\n    },\n    {\n      \"spec_key_en\": \"Processing & Freezing\",\n      \"spec_key_vi\": \"Quy cách chế biến & Cấp đông\",\n      \"spec_value\": \"Peeled, Tail-on, Stretched, IQF (Tray packed)\",\n      \"sort_order\": 3\n    },\n    {\n      \"spec_key_en\": \"Packaging\",\n      \"spec_key_vi\": \"Quy cách đóng gói\",\n      \"spec_value\": \"15-20 pcs/tray x 30 trays/carton (Retail/FoodService)\",\n      \"sort_order\": 4\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/products",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products"]
+            },
+            "description": "Thêm sản phẩm mới kèm đồng bộ tạo các dòng thông số kỹ thuật `specifications` trong cùng 1 transaction database bảo mật."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 10. Update Product & Sync Specifications Table",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"name_en\": \"Frozen Vannamei Shrimp - Breaded (Premium Gold)\",\n  \"name_vi\": \"Tôm thẻ chân trắng tẩm bột đông lạnh thượng hạng\",\n  \"short_desc_en\": \"Premium IQF breaded Vannamei shrimp with golden panko crust.\",\n  \"short_desc_vi\": \"Tôm thẻ chân trắng tẩm bột panko vàng giòn cao cấp.\",\n  \"product_type\": \"value_added\",\n  \"is_featured\": true,\n  \"is_active\": true,\n  \"sort_order\": 1,\n  \"specifications\": [\n    {\n      \"spec_key_en\": \"Scientific Name\",\n      \"spec_key_vi\": \"Tên khoa học\",\n      \"spec_value\": \"Litopenaeus vannamei\",\n      \"sort_order\": 1\n    },\n    {\n      \"spec_key_en\": \"Origin\",\n      \"spec_key_vi\": \"Xuất xứ\",\n      \"spec_value\": \"Vietnam (ASC Certified Farm)\",\n      \"sort_order\": 2\n    },\n    {\n      \"spec_key_en\": \"Size / Counting\",\n      \"spec_key_vi\": \"Kích cỡ\",\n      \"spec_value\": \"16/20, 21/25, 26/30 (pcs/lb)\",\n      \"sort_order\": 3\n    },\n    {\n      \"spec_key_en\": \"Freezing Method\",\n      \"spec_key_vi\": \"Quy cách cấp đông\",\n      \"spec_value\": \"IQF (Individual Quick Freezing)\",\n      \"sort_order\": 4\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products", "1"]
+            },
+            "description": "Cập nhật sản phẩm theo ID. Tự động thay thế/đồng bộ lại bảng thông số kỹ thuật theo danh sách `specifications` truyền vào."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 11. Delete Product by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/products/999",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products", "999"]
+            },
+            "description": "Xóa vĩnh viễn 1 sản phẩm cùng toàn bộ hình ảnh và thông số kỹ thuật liên kết."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 12. Upload Product Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/products/upload-image",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "products", "upload-image"]
+            },
+            "description": "Upload hình ảnh sản phẩm (chấp nhận `.jpg`, `.jpeg`, `.png`, `.webp`, `.avif`). Trả về `data.url` để dùng làm thumbnail hoặc gallery."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 13. Get All Buyer Inquiries (Filter & Search)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/inquiries?page=1&limit=20&status=new&source=inquiry_basket&search=",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "inquiries"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": "new",
+                  "description": "Lọc trạng thái: new | processing | quoted | closed"
+                },
+                {
+                  "key": "source",
+                  "value": "inquiry_basket",
+                  "description": "Lọc nguồn: inquiry_basket | contact_form"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Tìm kiếm theo mã GS-code, tên công ty, email hoặc quốc gia"
+                }
+              ]
+            },
+            "description": "Lấy danh sách các đơn hỏi hàng từ khách mua quốc tế (`International Buyers`). Hỗ trợ lọc theo `status`, `source` và từ khóa tìm kiếm."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 14. Get Inquiry Detail & Basket Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/inquiries/2",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "inquiries", "2"]
+            },
+            "description": "Inspect đầy đủ chi tiết của 1 đơn hỏi hàng theo ID (bao gồm cả danh sách các sản phẩm và số lượng, quy cách trong `items`)."
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 15. Update Inquiry Workflow Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"quoted\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/inquiries/2/status",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "inquiries", "2", "status"]
+            },
+            "description": "Cập nhật quy trình xử lý đơn báo giá (Workflow Status):\n- `new`: Đơn mới gửi tới\n- `processing`: Sourcing team đang làm báo giá / check kho\n- `quoted`: Đã gửi bảng báo giá Proforma Invoice / Quotation\n- `closed`: Khách đã chốt đơn hoặc đóng yêu cầu"
+          },
+          "response": []
+        },
+        {
+          "name": "[Admin] 16. Delete Inquiry Record",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/inquiries/999",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "inquiries", "999"]
+            },
+            "description": "Xóa bản ghi đơn hỏi hàng khỏi hệ thống."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

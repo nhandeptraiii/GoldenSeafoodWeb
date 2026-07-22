@@ -1,0 +1,13 @@
+.section { padding: 140px 0; background: #fff; }
+.inner { width: min(1180px, calc(100% - 64px)); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+.visual { position: relative; min-height: 560px; }
+.visual img { position: absolute; inset: 0 44px 44px 0; width: calc(100% - 44px); height: calc(100% - 44px); object-fit: cover; object-position: 72% center; border-radius: 2px; }
+.imageAccent { position: absolute; right: 0; bottom: 0; width: 58%; height: 58%; border: 1px solid var(--gs-secondary); z-index: -1; }
+.eyebrow { margin: 0 0 20px; color: var(--gs-secondary-dark); text-transform: uppercase; letter-spacing: .17em; font-size: .74rem; font-weight: 750; }
+.content h2 { margin: 0; color: var(--gs-primary); font-size: clamp(2.35rem, 4vw, 4.1rem); line-height: 1.05; letter-spacing: -.045em; font-weight: 650; }
+.description { margin: 28px 0; color: var(--gs-muted); line-height: 1.85; }
+.points { margin: 0 0 34px; border-top: 1px solid var(--gs-line); }
+.point { display: flex; gap: 15px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--gs-line); color: var(--gs-primary); font-weight: 650; }
+.point svg { color: var(--gs-secondary-dark); font-size: 1.25rem; }
+@media (max-width: 900px) { .section { padding: 100px 0; } .inner { width: min(100% - 40px, 720px); grid-template-columns: 1fr; gap: 68px; } .visual { min-height: 460px; } }
+@media (max-width: 600px) { .section { padding: 78px 0; } .inner { width: calc(100% - 32px); gap: 50px; } .visual { min-height: 350px; } .visual img { inset: 0 20px 20px 0; width: calc(100% - 20px); height: calc(100% - 20px); } }
