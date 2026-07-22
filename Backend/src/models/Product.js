@@ -53,18 +53,6 @@ const Product = sequelize.define('Product', {
     allowNull: false,
     defaultValue: 'raw',
   },
-  /**
-   * Specifications lưu dạng JSON array trực tiếp trong bảng products.
-   * Mỗi phần tử có dạng:
-   * { "key_en": "Origin", "key_vi": "Xuất xứ", "value": "Vietnam", "sort": 1 }
-   * Không cần bảng product_specifications riêng.
-   */
-  specifications: {
-    type: DataTypes.JSON,
-    allowNull: true,
-    defaultValue: [],
-    comment: 'Array of {key_en, key_vi, value, sort} — thay thế bảng product_specifications',
-  },
   is_featured: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

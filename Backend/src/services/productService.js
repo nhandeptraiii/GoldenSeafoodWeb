@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Product, Category, ProductImage } = require('../models');
+const { Product, Category, ProductImage, ProductSpecification } = require('../models');
 const { getPagination } = require('../utils/pagination');
 
 /**
@@ -98,7 +98,7 @@ const getProducts = async (query = {}) => {
   // Calculate pagination
   const { limit, offset, pagination } = getPagination(query, totalCount);
 
-  // Fetch paginated products (không lấy specifications ở list — tiết kiệm băng thông)
+  // Fetch paginated products
   const products = await Product.findAll({
     where: whereClause,
     include: includeClause,
@@ -148,7 +148,7 @@ const getFeaturedProducts = async (limit = 6) => {
 };
 
 /**
- * Get product detail by slug with full images and specifications (JSON column)
+ * Get product detail by slug with full images and specifications
  */
 const getProductBySlug = async (slug) => {
   const product = await Product.findOne({
@@ -167,8 +167,17 @@ const getProductBySlug = async (slug) => {
         as: 'images',
         order: [['is_primary', 'DESC'], ['sort_order', 'ASC']],
       },
+      {
+        model: ProductSpecification,
+        as: 'specifications',
+      },
     ],
   });
+
+  if (product && product.specifications) {
+    // Sort specifications by sort_order
+    product.specifications.sort((a, b) => a.sort_order - b.sort_order);
+  }
 
   return product;
 };
