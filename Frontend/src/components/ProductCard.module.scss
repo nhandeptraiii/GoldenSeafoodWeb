@@ -1,0 +1,16 @@
+.card { height: 100%; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--gs-line); background: #fff; transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease; }
+.card:hover { transform: translateY(-5px); border-color: var(--gs-secondary); box-shadow: 0 22px 46px rgba(6,28,46,.11); }
+.imageLink { display: block; overflow: hidden; aspect-ratio: 1 / .82; background: #f3f5f6; }
+.imageLink img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+.card:hover .imageLink img { transform: scale(1.05); }
+.content { flex: 1; padding: 22px 22px 18px; display: flex; flex-direction: column; }
+.type { width: fit-content; margin: 0 0 13px; color: var(--gs-secondary-dark); font-size: .66rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.content h2 { margin: 0; color: var(--gs-primary); font-size: 1.02rem; line-height: 1.35; font-weight: 750; }
+.secondaryName { min-height: 38px; margin: 7px 0 22px; color: var(--gs-muted); font-size: .78rem; line-height: 1.5; }
+.actions { margin-top: auto; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--gs-line); }
+.actions a, .actions button { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; color: var(--gs-primary); font: inherit; font-size: .7rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
+.actions svg { font-size: 1rem; }
+.actions button { padding: 8px 10px; background: var(--gs-secondary); transition: .2s ease; opacity: 0; transform: translateY(5px); }
+.card:hover .actions button, .actions button:focus-visible { opacity: 1; transform: none; }
+@media (hover: none) { .actions button { opacity: 1; transform: none; } }
+@media (max-width: 700px) { .content { padding: 16px 14px 13px; } .content h2 { font-size: .9rem; } .secondaryName { min-height: 34px; font-size: .7rem; } .actions a { display: none; } .actions button { width: 100%; justify-content: center; opacity: 1; transform: none; font-size: .62rem; } }

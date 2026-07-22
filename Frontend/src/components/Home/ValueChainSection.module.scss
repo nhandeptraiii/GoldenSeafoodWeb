@@ -1,0 +1,12 @@
+.section { padding: 130px 0; background: var(--gs-primary-deep); overflow: hidden; }
+.section h2 { color: #fff; }
+.section h2 + p { color: #fff; }
+.inner { width: min(1320px, calc(100% - 64px)); margin: 0 auto; }
+.timeline { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; padding-top: 32px; }
+.line { position: absolute; top: 13px; left: 10%; right: 10%; height: 2px; overflow: hidden; background: rgba(255,255,255,.14); }
+.line span { display: block; width: 100%; height: 100%; background: var(--gs-secondary); transform: scaleX(0); transform-origin: left; }
+.animate .line span { animation: progress 1.4s cubic-bezier(.2,.75,.25,1) forwards; }
+@keyframes progress { to { transform: scaleX(1); } }
+@media (max-width: 900px) { .section { padding: 100px 0; } .inner { width: min(100% - 40px, 720px); } .timeline { grid-template-columns: 1fr; gap: 18px; padding: 0 0 0 30px; } .line { top: 0; bottom: 0; left: 10px; right: auto; width: 2px; height: auto; } .line span { width: 100%; height: 100%; transform: scaleY(0); transform-origin: top; } .animate .line span { animation-name: progressVertical; } @keyframes progressVertical { to { transform: scaleY(1); } } }
+@media (max-width: 600px) { .section { padding: 78px 0; } .inner { width: calc(100% - 32px); } .timeline { padding-left: 20px; } .line { left: 4px; } }
+@media (prefers-reduced-motion: reduce) { .line span { transform: scale(1); animation: none !important; } }

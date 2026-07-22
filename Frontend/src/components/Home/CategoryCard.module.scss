@@ -1,0 +1,13 @@
+.card { position: relative; min-width: 0; min-height: 340px; padding: 32px 28px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--gs-line); box-shadow: 0 8px 30px rgba(8, 34, 58, .05); transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease; }
+.card:hover { transform: translateY(-8px); border-color: var(--gs-secondary); box-shadow: 0 24px 55px rgba(8, 34, 58, .12); }
+.iconWrap { width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--gs-gold-soft); color: var(--gs-secondary-dark); }
+.iconWrap img { width: 34px; height: 34px; object-fit: contain; }
+.iconWrap svg { font-size: 2rem; }
+.index { position: absolute; right: 26px; top: 25px; margin: 0; color: rgba(8, 34, 58, .2); font-size: .72rem; letter-spacing: .12em; }
+.card h3 { margin: 28px 0 10px; color: var(--gs-primary); font-size: 1.25rem; line-height: 1.25; }
+.description { margin: 0; color: var(--gs-muted); font-size: .9rem; line-height: 1.65; }
+.link { margin-top: auto; padding-top: 24px; display: inline-flex; align-items: center; gap: 7px; color: var(--gs-primary); font-size: .76rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.link svg { font-size: 1rem; transition: transform .22s ease; }
+.card:hover .link svg { transform: translateX(4px); }
+@media (max-width: 700px) { .card { min-height: 320px; padding: 26px 22px; } }
+@media (max-width: 520px) { .card { min-height: 0; } }

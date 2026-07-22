@@ -1,0 +1,14 @@
+.section { padding: 125px 0 135px; background: #f5f7f9; }
+.inner { width: min(1320px, calc(100% - 64px)); margin: 0 auto; }
+.grid, .skeletonGrid { display: grid; gap: 18px; }
+.compact { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.threeColumns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fourColumns { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.skeletonGrid { grid-template-columns: repeat(3, 1fr); }
+.skeleton { height: 310px !important; transform: none !important; }
+.state { min-height: 240px; display: grid; place-items: center; align-content: center; gap: 14px; color: var(--gs-muted); text-align: center; border: 1px dashed rgba(8, 34, 58, .2); background: rgba(255,255,255,.65); }
+.state svg { color: var(--gs-secondary-dark); font-size: 2rem; }
+.state p { margin: 0; }
+@media (max-width: 1000px) { .section { padding: 100px 0; } .inner { width: min(100% - 40px, 900px); } .grid, .compact, .threeColumns, .fourColumns, .skeletonGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .section { padding: 78px 0; } .inner { width: calc(100% - 32px); } .grid, .compact, .threeColumns, .fourColumns, .skeletonGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+@media (max-width: 520px) { .grid, .compact, .threeColumns, .fourColumns, .skeletonGrid { grid-template-columns: 1fr; } }
