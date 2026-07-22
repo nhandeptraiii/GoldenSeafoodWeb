@@ -1,4 +1,4 @@
-const { Product, Category, ProductImage, ProductSpecification, sequelize } = require('../models');
+const { Product, Category, ProductImage, sequelize } = require('../models');
 const { generateUniqueSlug } = require('../utils/slugify');
 const { getPagination } = require('../utils/pagination');
 const { body } = require('express-validator');
@@ -10,6 +10,29 @@ const validateProduct = [
   body('name_vi').trim().notEmpty().withMessage('Vietnamese product name is required'),
   body('product_type').isIn(['raw', 'cooked', 'value_added']).withMessage('Invalid product type'),
 ];
+
+/**
+ * Chuẩn hóa mảng specifications từ request body.
+ * Mỗi phần tử phải có key_en, key_vi, value. sort tự động nếu không truyền.
+ * @param {any} raw - Giá trị specifications từ req.body (string JSON hoặc array)
+ * @returns {Array}
+ */
+const parseSpecifications = (raw) => {
+  if (!raw) return [];
+  let arr = raw;
+  if (typeof raw === 'string') {
+    try { arr = JSON.parse(raw); } catch { return []; }
+  }
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .filter((s) => s && s.key_en && s.key_vi && s.value !== undefined)
+    .map((s, idx) => ({
+      key_en: s.key_en,
+      key_vi: s.key_vi,
+      value: s.value,
+      sort: s.sort ?? idx + 1,
+    }));
+};
 
 /**
  * @route GET /api/admin/products
@@ -63,7 +86,7 @@ const getAllAdminProducts = async (req, res, next) => {
 
 /**
  * @route GET /api/admin/products/:id
- * @desc Get single product details by id with images and specifications
+ * @desc Get single product details by id with images and specifications (JSON column)
  */
 const getAdminProductById = async (req, res, next) => {
   try {
@@ -79,10 +102,6 @@ const getAdminProductById = async (req, res, next) => {
           as: 'images',
           order: [['is_primary', 'DESC'], ['sort_order', 'ASC']],
         },
-        {
-          model: ProductSpecification,
-          as: 'specifications',
-        },
       ],
     });
 
@@ -91,10 +110,6 @@ const getAdminProductById = async (req, res, next) => {
         success: false,
         message: 'Product not found',
       });
-    }
-
-    if (product.specifications) {
-      product.specifications.sort((a, b) => a.sort_order - b.sort_order);
     }
 
     res.json({
@@ -108,10 +123,9 @@ const getAdminProductById = async (req, res, next) => {
 
 /**
  * @route POST /api/admin/products
- * @desc Create new product along with specifications
+ * @desc Create new product. specifications là JSON array trực tiếp trong bảng products.
  */
 const createProduct = async (req, res, next) => {
-  const transaction = await sequelize.transaction();
   try {
     const {
       category_id,
@@ -129,9 +143,8 @@ const createProduct = async (req, res, next) => {
       specifications,
     } = req.body;
 
-    const category = await Category.findByPk(category_id, { transaction });
+    const category = await Category.findByPk(category_id);
     if (!category) {
-      await transaction.rollback();
       return res.status(400).json({
         success: false,
         message: 'Invalid category_id. Category does not exist.',
@@ -140,60 +153,38 @@ const createProduct = async (req, res, next) => {
 
     const slug = await generateUniqueSlug(Product, name_en);
 
-    const product = await Product.create(
-      {
-        category_id,
-        name_en,
-        name_vi,
-        slug,
-        short_desc_en: short_desc_en || null,
-        short_desc_vi: short_desc_vi || null,
-        description_en: description_en || null,
-        description_vi: description_vi || null,
-        thumbnail_url: thumbnail_url || null,
-        product_type: product_type || 'raw',
-        is_featured: is_featured !== undefined ? is_featured : false,
-        is_active: is_active !== undefined ? is_active : true,
-        sort_order: sort_order || 0,
-      },
-      { transaction }
-    );
-
-    // Save specifications if provided
-    if (specifications && Array.isArray(specifications) && specifications.length > 0) {
-      const specsData = specifications.map((spec, idx) => ({
-        product_id: product.id,
-        spec_key_en: spec.spec_key_en,
-        spec_key_vi: spec.spec_key_vi,
-        spec_value: spec.spec_value,
-        sort_order: spec.sort_order || idx + 1,
-      }));
-      await ProductSpecification.bulkCreate(specsData, { transaction });
-    }
-
-    await transaction.commit();
-
-    const createdProduct = await Product.findByPk(product.id, {
-      include: [{ model: ProductSpecification, as: 'specifications' }],
+    const product = await Product.create({
+      category_id,
+      name_en,
+      name_vi,
+      slug,
+      short_desc_en: short_desc_en || null,
+      short_desc_vi: short_desc_vi || null,
+      description_en: description_en || null,
+      description_vi: description_vi || null,
+      thumbnail_url: thumbnail_url || null,
+      product_type: product_type || 'raw',
+      specifications: parseSpecifications(specifications),
+      is_featured: is_featured !== undefined ? is_featured : false,
+      is_active: is_active !== undefined ? is_active : true,
+      sort_order: sort_order || 0,
     });
 
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
-      data: createdProduct,
+      data: product,
     });
   } catch (error) {
-    await transaction.rollback();
     next(error);
   }
 };
 
 /**
  * @route PUT /api/admin/products/:id
- * @desc Update product details and sync specifications
+ * @desc Update product. specifications ghi đè toàn bộ JSON column.
  */
 const updateProduct = async (req, res, next) => {
-  const transaction = await sequelize.transaction();
   try {
     const { id } = req.params;
     const {
@@ -212,9 +203,8 @@ const updateProduct = async (req, res, next) => {
       specifications,
     } = req.body;
 
-    const product = await Product.findByPk(id, { transaction });
+    const product = await Product.findByPk(id);
     if (!product) {
-      await transaction.rollback();
       return res.status(404).json({
         success: false,
         message: 'Product not found',
@@ -226,49 +216,29 @@ const updateProduct = async (req, res, next) => {
       slug = await generateUniqueSlug(Product, name_en, id);
     }
 
-    await product.update(
-      {
-        category_id: category_id || product.category_id,
-        name_en: name_en || product.name_en,
-        name_vi: name_vi || product.name_vi,
-        slug,
-        short_desc_en: short_desc_en !== undefined ? short_desc_en : product.short_desc_en,
-        short_desc_vi: short_desc_vi !== undefined ? short_desc_vi : product.short_desc_vi,
-        description_en: description_en !== undefined ? description_en : product.description_en,
-        description_vi: description_vi !== undefined ? description_vi : product.description_vi,
-        thumbnail_url: thumbnail_url !== undefined ? thumbnail_url : product.thumbnail_url,
-        product_type: product_type || product.product_type,
-        is_featured: is_featured !== undefined ? is_featured : product.is_featured,
-        is_active: is_active !== undefined ? is_active : product.is_active,
-        sort_order: sort_order !== undefined ? sort_order : product.sort_order,
-      },
-      { transaction }
-    );
-
-    // Sync specifications if provided
-    if (specifications && Array.isArray(specifications)) {
-      // Delete old specifications
-      await ProductSpecification.destroy({ where: { product_id: id }, transaction });
-      
-      // Create new ones
-      if (specifications.length > 0) {
-        const specsData = specifications.map((spec, idx) => ({
-          product_id: id,
-          spec_key_en: spec.spec_key_en,
-          spec_key_vi: spec.spec_key_vi,
-          spec_value: spec.spec_value,
-          sort_order: spec.sort_order || idx + 1,
-        }));
-        await ProductSpecification.bulkCreate(specsData, { transaction });
-      }
-    }
-
-    await transaction.commit();
+    await product.update({
+      category_id: category_id || product.category_id,
+      name_en: name_en || product.name_en,
+      name_vi: name_vi || product.name_vi,
+      slug,
+      short_desc_en: short_desc_en !== undefined ? short_desc_en : product.short_desc_en,
+      short_desc_vi: short_desc_vi !== undefined ? short_desc_vi : product.short_desc_vi,
+      description_en: description_en !== undefined ? description_en : product.description_en,
+      description_vi: description_vi !== undefined ? description_vi : product.description_vi,
+      thumbnail_url: thumbnail_url !== undefined ? thumbnail_url : product.thumbnail_url,
+      product_type: product_type || product.product_type,
+      // Chỉ cập nhật specifications nếu client truyền vào (kể cả mảng rỗng [])
+      specifications: specifications !== undefined
+        ? parseSpecifications(specifications)
+        : product.specifications,
+      is_featured: is_featured !== undefined ? is_featured : product.is_featured,
+      is_active: is_active !== undefined ? is_active : product.is_active,
+      sort_order: sort_order !== undefined ? sort_order : product.sort_order,
+    });
 
     const updatedProduct = await Product.findByPk(id, {
       include: [
         { model: Category, as: 'category' },
-        { model: ProductSpecification, as: 'specifications' },
         { model: ProductImage, as: 'images' },
       ],
     });
@@ -279,38 +249,33 @@ const updateProduct = async (req, res, next) => {
       data: updatedProduct,
     });
   } catch (error) {
-    await transaction.rollback();
     next(error);
   }
 };
 
 /**
  * @route DELETE /api/admin/products/:id
- * @desc Delete product and associated images/specifications
+ * @desc Delete product and associated images
  */
 const deleteProduct = async (req, res, next) => {
-  const transaction = await sequelize.transaction();
   try {
     const { id } = req.params;
-    const product = await Product.findByPk(id, { transaction });
+    const product = await Product.findByPk(id);
 
     if (!product) {
-      await transaction.rollback();
       return res.status(404).json({
         success: false,
         message: 'Product not found',
       });
     }
 
-    await product.destroy({ transaction });
-    await transaction.commit();
+    await product.destroy();
 
     res.json({
       success: true,
       message: 'Product deleted successfully',
     });
   } catch (error) {
-    await transaction.rollback();
     next(error);
   }
 };

@@ -9,7 +9,7 @@ const errorHandler = (err, req, res, next) => {
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({
       success: false,
-      message: 'File size exceeds the maximum limit (10MB)',
+      message: 'File quá lớn. Giới hạn: ảnh sản phẩm 5MB, icon danh mục 5MB, file đính kèm 10MB.',
     });
   }
 

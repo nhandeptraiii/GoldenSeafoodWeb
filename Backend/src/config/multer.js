@@ -105,7 +105,7 @@ const iconFileFilter = (req, file, cb) => {
 const uploadCategoryIcon = multer({
   storage: categoryIconStorage,
   fileFilter: iconFileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB cho icon
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB cho icon
 });
 
 module.exports = { uploadSpec, uploadProductImage, uploadCategoryIcon };
