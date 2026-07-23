@@ -101,7 +101,16 @@ const getProducts = async (query = {}) => {
   // Fetch paginated products
   const products = await Product.findAll({
     where: whereClause,
-    include: includeClause,
+    include: [
+      ...includeClause,
+      {
+        model: ProductImage,
+        as: 'images',
+        where: { is_primary: true },
+        attributes: ['image_url', 'alt_text'],
+        required: false, // LEFT JOIN — product không ảnh vẫn hiển thị
+      },
+    ],
     order,
     limit,
     offset,
@@ -113,7 +122,6 @@ const getProducts = async (query = {}) => {
       'slug',
       'short_desc_en',
       'short_desc_vi',
-      'thumbnail_url',
       'product_type',
       'is_featured',
       'sort_order',
@@ -138,6 +146,13 @@ const getFeaturedProducts = async (limit = 6) => {
         model: Category,
         as: 'category',
         attributes: ['id', 'name_en', 'name_vi', 'slug'],
+      },
+      {
+        model: ProductImage,
+        as: 'images',
+        where: { is_primary: true },
+        attributes: ['image_url', 'alt_text'],
+        required: false, // LEFT JOIN — product không ảnh vẫn hiển thị
       },
     ],
     order: [['sort_order', 'ASC'], ['created_at', 'DESC']],

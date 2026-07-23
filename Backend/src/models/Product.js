@@ -44,10 +44,6 @@ const Product = sequelize.define('Product', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  thumbnail_url: {
-    type: DataTypes.STRING(500),
-    allowNull: true,
-  },
   product_type: {
     type: DataTypes.ENUM('raw', 'cooked', 'value_added'),
     allowNull: false,

@@ -1,8 +1,34 @@
+const fs = require('fs');
+const path = require('path');
 const { Product, Category, ProductImage, ProductSpecification, sequelize } = require('../models');
 const { generateUniqueSlug } = require('../utils/slugify');
 const { getPagination } = require('../utils/pagination');
 const { body } = require('express-validator');
-const path = require('path');
+
+/**
+ * Build full URL cho ảnh sản phẩm từ filename
+ */
+const buildImageUrl = (req, filename) => {
+  return `${req.protocol}://${req.get('host')}/uploads/products/${filename}`;
+};
+
+/**
+ * Xóa file ảnh vật lý khỏi disk (bất đồng bộ, bỏ qua lỗi)
+ */
+const deleteFileFromDisk = (imageUrl) => {
+  try {
+    const filename = imageUrl.split('/uploads/products/').pop();
+    if (!filename) return;
+    const filePath = path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads', 'products', filename);
+    fs.unlink(filePath, (err) => {
+      if (err && err.code !== 'ENOENT') {
+        console.warn(`[deleteFileFromDisk] Could not delete ${filePath}:`, err.message);
+      }
+    });
+  } catch (err) {
+    console.warn('[deleteFileFromDisk] Error parsing image URL:', err.message);
+  }
+};
 
 const validateProduct = [
   body('category_id').notEmpty().isInt().withMessage('Category ID is required and must be an integer'),
@@ -42,6 +68,13 @@ const getAllAdminProducts = async (req, res, next) => {
           model: Category,
           as: 'category',
           attributes: ['id', 'name_en', 'name_vi', 'slug'],
+        },
+        {
+          model: ProductImage,
+          as: 'images',
+          where: { is_primary: true },
+          attributes: ['image_url', 'alt_text'],
+          required: false, // LEFT JOIN — product không ảnh vẫn hiển thị
         },
       ],
       order: [['sort_order', 'ASC'], ['created_at', 'DESC']],
@@ -108,7 +141,11 @@ const getAdminProductById = async (req, res, next) => {
 
 /**
  * @route POST /api/admin/products
- * @desc Create new product along with specifications
+ * @desc Create new product along with images (thumbnail + gallery) and specifications
+ * Accepts multipart/form-data:
+ *   - thumbnail (file, optional): ảnh chính → ProductImage { is_primary: true }
+ *   - gallery   (files, optional): ảnh phụ  → ProductImage { is_primary: false }
+ *   - specifications (JSON string, optional): mảng thông số kỹ thuật
  */
 const createProduct = async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -121,7 +158,6 @@ const createProduct = async (req, res, next) => {
       short_desc_vi,
       description_en,
       description_vi,
-      thumbnail_url,
       product_type,
       is_featured,
       is_active,
@@ -150,7 +186,6 @@ const createProduct = async (req, res, next) => {
         short_desc_vi: short_desc_vi || null,
         description_en: description_en || null,
         description_vi: description_vi || null,
-        thumbnail_url: thumbnail_url || null,
         product_type: product_type || 'raw',
         is_featured: is_featured !== undefined ? is_featured : false,
         is_active: is_active !== undefined ? is_active : true,
@@ -159,9 +194,44 @@ const createProduct = async (req, res, next) => {
       { transaction }
     );
 
-    // Save specifications if provided
-    if (specifications && Array.isArray(specifications) && specifications.length > 0) {
-      const specsData = specifications.map((spec, idx) => ({
+    // --- Xử lý ảnh upload ---
+    const imagesData = [];
+
+    const thumbnailFiles = req.files && req.files['thumbnail'];
+    if (thumbnailFiles && thumbnailFiles.length > 0) {
+      imagesData.push({
+        product_id: product.id,
+        image_url: buildImageUrl(req, thumbnailFiles[0].filename),
+        alt_text: name_en || null,
+        is_primary: true,
+        sort_order: 0,
+      });
+    }
+
+    const galleryFiles = req.files && req.files['gallery'];
+    if (galleryFiles && galleryFiles.length > 0) {
+      galleryFiles.forEach((file, idx) => {
+        imagesData.push({
+          product_id: product.id,
+          image_url: buildImageUrl(req, file.filename),
+          alt_text: `${name_en} - ${idx + 1}`,
+          is_primary: false,
+          sort_order: idx + 1,
+        });
+      });
+    }
+
+    if (imagesData.length > 0) {
+      await ProductImage.bulkCreate(imagesData, { transaction });
+    }
+
+    // --- Xử lý specifications (hỗ trợ cả JSON string lẫn array) ---
+    let parsedSpecs = specifications;
+    if (typeof specifications === 'string') {
+      try { parsedSpecs = JSON.parse(specifications); } catch (_) { parsedSpecs = []; }
+    }
+    if (parsedSpecs && Array.isArray(parsedSpecs) && parsedSpecs.length > 0) {
+      const specsData = parsedSpecs.map((spec, idx) => ({
         product_id: product.id,
         spec_key_en: spec.spec_key_en,
         spec_key_vi: spec.spec_key_vi,
@@ -174,7 +244,11 @@ const createProduct = async (req, res, next) => {
     await transaction.commit();
 
     const createdProduct = await Product.findByPk(product.id, {
-      include: [{ model: ProductSpecification, as: 'specifications' }],
+      include: [
+        { model: Category, as: 'category', attributes: ['id', 'name_en', 'name_vi', 'slug'] },
+        { model: ProductImage, as: 'images' },
+        { model: ProductSpecification, as: 'specifications' },
+      ],
     });
 
     res.status(201).json({
@@ -185,12 +259,16 @@ const createProduct = async (req, res, next) => {
   } catch (error) {
     await transaction.rollback();
     next(error);
+
   }
 };
 
 /**
  * @route PUT /api/admin/products/:id
- * @desc Update product details and sync specifications
+ * @desc Update product details, sync specifications, and optionally replace images
+ * Chiến lược ảnh "replace if uploaded":
+ *   - Nếu có file ảnh mới → xóa toàn bộ ảnh cũ (disk + DB) → tạo lại
+ *   - Nếu không có file → giữ nguyên ảnh cũ
  */
 const updateProduct = async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -204,7 +282,6 @@ const updateProduct = async (req, res, next) => {
       short_desc_vi,
       description_en,
       description_vi,
-      thumbnail_url,
       product_type,
       is_featured,
       is_active,
@@ -236,7 +313,6 @@ const updateProduct = async (req, res, next) => {
         short_desc_vi: short_desc_vi !== undefined ? short_desc_vi : product.short_desc_vi,
         description_en: description_en !== undefined ? description_en : product.description_en,
         description_vi: description_vi !== undefined ? description_vi : product.description_vi,
-        thumbnail_url: thumbnail_url !== undefined ? thumbnail_url : product.thumbnail_url,
         product_type: product_type || product.product_type,
         is_featured: is_featured !== undefined ? is_featured : product.is_featured,
         is_active: is_active !== undefined ? is_active : product.is_active,
@@ -245,14 +321,65 @@ const updateProduct = async (req, res, next) => {
       { transaction }
     );
 
-    // Sync specifications if provided
-    if (specifications && Array.isArray(specifications)) {
-      // Delete old specifications
-      await ProductSpecification.destroy({ where: { product_id: id }, transaction });
+    // --- Xử lý ảnh: replace if uploaded ---
+    const thumbnailFiles = req.files && req.files['thumbnail'];
+    const galleryFiles = req.files && req.files['gallery'];
+    const hasNewImages = (thumbnailFiles && thumbnailFiles.length > 0) || (galleryFiles && galleryFiles.length > 0);
 
-      // Create new ones
-      if (specifications.length > 0) {
-        const specsData = specifications.map((spec, idx) => ({
+    if (hasNewImages) {
+      // Lấy ảnh cũ để xóa file vật lý
+      const oldImages = await ProductImage.findAll({
+        where: { product_id: id },
+        attributes: ['image_url'],
+        transaction,
+      });
+
+      // Xóa records cũ trong DB
+      await ProductImage.destroy({ where: { product_id: id }, transaction });
+
+      // Xóa file vật lý cũ (bất đồng bộ, không ảnh hưởng transaction)
+      oldImages.forEach((img) => deleteFileFromDisk(img.image_url));
+
+      // Tạo records ảnh mới
+      const currentName = name_en || product.name_en;
+      const newImagesData = [];
+
+      if (thumbnailFiles && thumbnailFiles.length > 0) {
+        newImagesData.push({
+          product_id: id,
+          image_url: buildImageUrl(req, thumbnailFiles[0].filename),
+          alt_text: currentName || null,
+          is_primary: true,
+          sort_order: 0,
+        });
+      }
+
+      if (galleryFiles && galleryFiles.length > 0) {
+        galleryFiles.forEach((file, idx) => {
+          newImagesData.push({
+            product_id: id,
+            image_url: buildImageUrl(req, file.filename),
+            alt_text: `${currentName} - ${idx + 1}`,
+            is_primary: false,
+            sort_order: idx + 1,
+          });
+        });
+      }
+
+      if (newImagesData.length > 0) {
+        await ProductImage.bulkCreate(newImagesData, { transaction });
+      }
+    }
+
+    // --- Sync specifications if provided ---
+    let parsedSpecs = specifications;
+    if (typeof specifications === 'string') {
+      try { parsedSpecs = JSON.parse(specifications); } catch (_) { parsedSpecs = undefined; }
+    }
+    if (parsedSpecs && Array.isArray(parsedSpecs)) {
+      await ProductSpecification.destroy({ where: { product_id: id }, transaction });
+      if (parsedSpecs.length > 0) {
+        const specsData = parsedSpecs.map((spec, idx) => ({
           product_id: id,
           spec_key_en: spec.spec_key_en,
           spec_key_vi: spec.spec_key_vi,
@@ -268,8 +395,8 @@ const updateProduct = async (req, res, next) => {
     const updatedProduct = await Product.findByPk(id, {
       include: [
         { model: Category, as: 'category' },
+        { model: ProductImage, as: 'images', order: [['is_primary', 'DESC'], ['sort_order', 'ASC']] },
         { model: ProductSpecification, as: 'specifications' },
-        { model: ProductImage, as: 'images' },
       ],
     });
 
@@ -286,7 +413,7 @@ const updateProduct = async (req, res, next) => {
 
 /**
  * @route DELETE /api/admin/products/:id
- * @desc Delete product and associated images/specifications
+ * @desc Delete product and associated images/specifications (cascade) + delete image files from disk
  */
 const deleteProduct = async (req, res, next) => {
   const transaction = await sequelize.transaction();
@@ -302,8 +429,18 @@ const deleteProduct = async (req, res, next) => {
       });
     }
 
+    // Lấy ảnh để xóa file vật lý trước khi cascade delete
+    const images = await ProductImage.findAll({
+      where: { product_id: id },
+      attributes: ['image_url'],
+      transaction,
+    });
+
     await product.destroy({ transaction });
     await transaction.commit();
+
+    // Xóa file vật lý sau khi commit (bất đồng bộ)
+    images.forEach((img) => deleteFileFromDisk(img.image_url));
 
     res.json({
       success: true,
@@ -317,7 +454,7 @@ const deleteProduct = async (req, res, next) => {
 
 /**
  * @route POST /api/admin/products/upload-image
- * @desc Upload image for product thumbnail or gallery
+ * @desc Upload single image (legacy endpoint — kept for compatibility)
  */
 const uploadImage = async (req, res, next) => {
   try {

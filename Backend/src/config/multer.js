@@ -108,4 +108,14 @@ const uploadCategoryIcon = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB cho icon
 });
 
-module.exports = { uploadSpec, uploadProductImage, uploadCategoryIcon };
+// Upload middleware cho product images (nhiều ảnh: ảnh chính + ảnh phụ)
+const uploadProductImages = multer({
+  storage: productImageStorage,
+  fileFilter: imageFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB mỗi ảnh
+}).fields([
+  { name: 'thumbnail', maxCount: 1 },  // ảnh chính (is_primary = true)
+  { name: 'gallery', maxCount: 10 },   // ảnh phụ (is_primary = false)
+]);
+
+module.exports = { uploadSpec, uploadProductImage, uploadProductImages, uploadCategoryIcon };
