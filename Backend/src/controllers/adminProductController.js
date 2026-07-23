@@ -204,7 +204,7 @@ const createProduct = async (req, res, next) => {
         image_url: buildImageUrl(req, thumbnailFiles[0].filename),
         alt_text: name_en || null,
         is_primary: true,
-        sort_order: 0,
+        sort_order: 1,
       });
     }
 
@@ -216,7 +216,7 @@ const createProduct = async (req, res, next) => {
           image_url: buildImageUrl(req, file.filename),
           alt_text: `${name_en} - ${idx + 1}`,
           is_primary: false,
-          sort_order: idx + 1,
+          sort_order: idx + 2,
         });
       });
     }
@@ -350,7 +350,7 @@ const updateProduct = async (req, res, next) => {
           image_url: buildImageUrl(req, thumbnailFiles[0].filename),
           alt_text: currentName || null,
           is_primary: true,
-          sort_order: 0,
+          sort_order: 1,
         });
       }
 
@@ -361,7 +361,7 @@ const updateProduct = async (req, res, next) => {
             image_url: buildImageUrl(req, file.filename),
             alt_text: `${currentName} - ${idx + 1}`,
             is_primary: false,
-            sort_order: idx + 1,
+            sort_order: idx + 2,
           });
         });
       }
