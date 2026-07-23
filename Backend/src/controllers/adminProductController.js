@@ -82,10 +82,17 @@ const getAllAdminProducts = async (req, res, next) => {
       offset,
     });
 
+    const formattedProducts = products.map(product => {
+      const p = product.toJSON();
+      p.primary_image = p.images && p.images.length > 0 ? p.images[0] : null;
+      delete p.images;
+      return p;
+    });
+
     res.json({
       success: true,
       data: {
-        products,
+        products: formattedProducts,
         pagination,
       },
     });
