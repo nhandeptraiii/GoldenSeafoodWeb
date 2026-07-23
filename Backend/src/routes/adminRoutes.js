@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { authenticateAdmin } = require('../middlewares/auth');
 const { validate } = require('../middlewares/validate');
-const { uploadProductImages, uploadCategoryIcon } = require('../config/multer');
+const { uploadProductImages, uploadProductImage, uploadCategoryIcon } = require('../config/multer');
 
 const adminAuthController = require('../controllers/adminAuthController');
 const adminCategoryController = require('../controllers/adminCategoryController');
@@ -65,6 +65,7 @@ router.put(
 router.delete('/products/:id', adminProductController.deleteProduct);
 router.post(
   '/products/upload-image',
+  uploadProductImage.single('image'),
   adminProductController.uploadImage
 );
 
