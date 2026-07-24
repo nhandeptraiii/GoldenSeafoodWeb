@@ -170,6 +170,7 @@ const createProduct = async (req, res, next) => {
       is_active,
       sort_order,
       specifications,
+      images,
     } = req.body;
 
     const category = await Category.findByPk(category_id, { transaction });
@@ -203,29 +204,46 @@ const createProduct = async (req, res, next) => {
 
     // --- Xử lý ảnh upload ---
     const imagesData = [];
-
-    const thumbnailFiles = req.files && req.files['thumbnail'];
-    if (thumbnailFiles && thumbnailFiles.length > 0) {
-      imagesData.push({
-        product_id: product.id,
-        image_url: buildImageUrl(req, thumbnailFiles[0].filename),
-        alt_text: name_en || null,
-        is_primary: true,
-        sort_order: 1,
-      });
+    
+    let parsedImages = images;
+    if (typeof images === 'string') {
+      try { parsedImages = JSON.parse(images); } catch (_) { parsedImages = []; }
     }
 
-    const galleryFiles = req.files && req.files['gallery'];
-    if (galleryFiles && galleryFiles.length > 0) {
-      galleryFiles.forEach((file, idx) => {
+    if (parsedImages && Array.isArray(parsedImages) && parsedImages.length > 0) {
+      parsedImages.forEach((img, idx) => {
         imagesData.push({
           product_id: product.id,
-          image_url: buildImageUrl(req, file.filename),
-          alt_text: `${name_en} - ${idx + 1}`,
-          is_primary: false,
-          sort_order: idx + 2,
+          image_url: img.image_url,
+          alt_text: img.alt_text || (idx === 0 ? name_en : `${name_en} - ${idx}`),
+          is_primary: idx === 0,
+          sort_order: idx + 1,
         });
       });
+    } else {
+      const thumbnailFiles = req.files && req.files['thumbnail'];
+      if (thumbnailFiles && thumbnailFiles.length > 0) {
+        imagesData.push({
+          product_id: product.id,
+          image_url: buildImageUrl(req, thumbnailFiles[0].filename),
+          alt_text: name_en || null,
+          is_primary: true,
+          sort_order: 1,
+        });
+      }
+
+      const galleryFiles = req.files && req.files['gallery'];
+      if (galleryFiles && galleryFiles.length > 0) {
+        galleryFiles.forEach((file, idx) => {
+          imagesData.push({
+            product_id: product.id,
+            image_url: buildImageUrl(req, file.filename),
+            alt_text: `${name_en} - ${idx + 1}`,
+            is_primary: false,
+            sort_order: idx + 2,
+          });
+        });
+      }
     }
 
     if (imagesData.length > 0) {
@@ -294,6 +312,7 @@ const updateProduct = async (req, res, next) => {
       is_active,
       sort_order,
       specifications,
+      images,
     } = req.body;
 
     const product = await Product.findByPk(id, { transaction });
@@ -328,12 +347,18 @@ const updateProduct = async (req, res, next) => {
       { transaction }
     );
 
-    // --- Xử lý ảnh: replace if uploaded ---
+    // --- Xử lý ảnh: replace if uploaded or provided in body ---
+    let parsedImages = images;
+    if (typeof images === 'string') {
+      try { parsedImages = JSON.parse(images); } catch (_) { parsedImages = undefined; }
+    }
+
     const thumbnailFiles = req.files && req.files['thumbnail'];
     const galleryFiles = req.files && req.files['gallery'];
-    const hasNewImages = (thumbnailFiles && thumbnailFiles.length > 0) || (galleryFiles && galleryFiles.length > 0);
+    const hasNewFiles = (thumbnailFiles && thumbnailFiles.length > 0) || (galleryFiles && galleryFiles.length > 0);
+    const isImagesProvidedInBody = parsedImages && Array.isArray(parsedImages);
 
-    if (hasNewImages) {
+    if (hasNewFiles || isImagesProvidedInBody) {
       // Lấy ảnh cũ để xóa file vật lý
       const oldImages = await ProductImage.findAll({
         where: { product_id: id },
@@ -344,33 +369,54 @@ const updateProduct = async (req, res, next) => {
       // Xóa records cũ trong DB
       await ProductImage.destroy({ where: { product_id: id }, transaction });
 
-      // Xóa file vật lý cũ (bất đồng bộ, không ảnh hưởng transaction)
-      oldImages.forEach((img) => deleteFileFromDisk(img.image_url));
+      if (hasNewFiles) {
+        // Xóa file vật lý cũ (bất đồng bộ, không ảnh hưởng transaction)
+        oldImages.forEach((img) => deleteFileFromDisk(img.image_url));
+      } else if (isImagesProvidedInBody) {
+        const newImageUrls = parsedImages.map(img => img.image_url);
+        oldImages.forEach((img) => {
+          if (!newImageUrls.includes(img.image_url)) {
+            deleteFileFromDisk(img.image_url);
+          }
+        });
+      }
 
       // Tạo records ảnh mới
       const currentName = name_en || product.name_en;
       const newImagesData = [];
 
-      if (thumbnailFiles && thumbnailFiles.length > 0) {
-        newImagesData.push({
-          product_id: id,
-          image_url: buildImageUrl(req, thumbnailFiles[0].filename),
-          alt_text: currentName || null,
-          is_primary: true,
-          sort_order: 1,
-        });
-      }
-
-      if (galleryFiles && galleryFiles.length > 0) {
-        galleryFiles.forEach((file, idx) => {
+      if (isImagesProvidedInBody && parsedImages.length > 0) {
+        parsedImages.forEach((img, idx) => {
           newImagesData.push({
             product_id: id,
-            image_url: buildImageUrl(req, file.filename),
-            alt_text: `${currentName} - ${idx + 1}`,
-            is_primary: false,
-            sort_order: idx + 2,
+            image_url: img.image_url,
+            alt_text: img.alt_text || (idx === 0 ? currentName : `${currentName} - ${idx}`),
+            is_primary: idx === 0,
+            sort_order: idx + 1,
           });
         });
+      } else if (hasNewFiles) {
+        if (thumbnailFiles && thumbnailFiles.length > 0) {
+          newImagesData.push({
+            product_id: id,
+            image_url: buildImageUrl(req, thumbnailFiles[0].filename),
+            alt_text: currentName || null,
+            is_primary: true,
+            sort_order: 1,
+          });
+        }
+
+        if (galleryFiles && galleryFiles.length > 0) {
+          galleryFiles.forEach((file, idx) => {
+            newImagesData.push({
+              product_id: id,
+              image_url: buildImageUrl(req, file.filename),
+              alt_text: `${currentName} - ${idx + 1}`,
+              is_primary: false,
+              sort_order: idx + 2,
+            });
+          });
+        }
       }
 
       if (newImagesData.length > 0) {
