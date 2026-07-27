@@ -1,8 +1,11 @@
+import { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import ThermostatRoundedIcon from '@mui/icons-material/ThermostatRounded'
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined'
 import ScienceOutlinedIcon from '@mui/icons-material/ScienceOutlined'
 import AcUnitRoundedIcon from '@mui/icons-material/AcUnitRounded'
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import banner from '../../assets/Quality/banner.png'
 import haccp from '../../assets/Quality/Logo/HACCP.png'
 import brc from '../../assets/Quality/Logo/BRC.png'
@@ -58,13 +61,14 @@ const copy = {
 
 export function QualityPage() {
   const lang = useSelector((state) => state.language.current)
+  const logoViewportRef = useRef(null)
   const text = copy[lang]
-  const sliderItems = [...certificates, ...certificates]
+  const scrollLogos = (direction) => logoViewportRef.current?.scrollBy({ left: direction * 420, behavior: 'smooth' })
   return <main className={styles.page}>
     <header className={styles.hero} style={{ '--hero-image': `url(${banner})` }}><div className={styles.heroContent}><p>{text.heroEyebrow}</p><h1>{text.heroTitle}</h1><span>{text.heroText}</span></div><div className={styles.scrollMark} aria-hidden="true"><i /></div></header>
 
     <section className={styles.certifications}><div className={styles.certIntro}><p>{text.certEyebrow}</p><h2>{text.certTitle}</h2><span>{text.certText}</span></div>
-      <div className={styles.logoViewport} aria-label={text.certTitle}><div className={styles.logoTrack}>{sliderItems.map((certificate, index) => <div className={styles.logoItem} key={`${certificate.name}-${index}`} aria-hidden={index >= certificates.length}><img src={certificate.image} alt={index < certificates.length ? certificate.name : ''} loading="lazy" /><span>{certificate.name}</span></div>)}</div></div>
+      <div className={styles.logoSlider}><button type="button" onClick={() => scrollLogos(-1)} aria-label={lang === 'vi' ? 'Xem chứng chỉ trước' : 'Previous certificates'}><ChevronLeftRoundedIcon /></button><div ref={logoViewportRef} className={styles.logoViewport} aria-label={text.certTitle}><div className={styles.logoTrack}>{certificates.map((certificate) => <div className={styles.logoItem} key={certificate.name}><img src={certificate.image} alt={certificate.name} loading="lazy" /><span>{certificate.name}</span></div>)}</div></div><button type="button" onClick={() => scrollLogos(1)} aria-label={lang === 'vi' ? 'Xem chứng chỉ tiếp theo' : 'Next certificates'}><ChevronRightRoundedIcon /></button></div>
     </section>
 
     <section className={styles.pipeline}><div className={styles.container}><div className={styles.sectionHeading}><p>{text.pipelineEyebrow}</p><h2>{text.pipelineTitle}</h2><span>{text.pipelineText}</span></div>

@@ -36,7 +36,6 @@ export function HeroSection() {
           <p className={styles.lead}>{text.text}</p>
           <nav className={styles.actions} aria-label={text.contact}>
             <CTAButton to="/contact" variant="secondary">{text.contact}</CTAButton>
-            <CTAButton to="/products" variant="outline">{text.catalog}</CTAButton>
           </nav>
         </motion.div>
         <motion.div className={styles.visual} initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .75, delay: .12 }}>

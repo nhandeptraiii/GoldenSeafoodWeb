@@ -7,6 +7,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded'
+import SetMealOutlinedIcon from '@mui/icons-material/SetMealOutlined'
 import { addInquiryItem } from '../../redux/slices/inquirySlice'
 import { getProductBySlug } from '../../services/product.service'
 import styles from './ProductDetailPage.module.scss'
@@ -26,7 +27,7 @@ export function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState('')
   const [zoomOrigin, setZoomOrigin] = useState('50% 50%')
   const text = copy[lang]
-  useEffect(() => { getProductBySlug(slug).then((data) => { setError(''); setProduct(data); setActiveImage(data?.images?.[0]?.image_url || data?.thumbnail_url) }).catch((err) => setError(err.message)) }, [slug])
+  useEffect(() => { getProductBySlug(slug).then((data) => { const orderedImages = [...(data?.images || [])].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || (a.sort_order || 0) - (b.sort_order || 0)); setError(''); setProduct({ ...data, images: orderedImages }); setActiveImage(orderedImages[0]?.image_url || '') }).catch((err) => setError(err.message)) }, [slug])
   useEffect(() => {
     if (!product) return
     const productName = lang === 'vi' ? product.name_vi : product.name_en
@@ -39,13 +40,14 @@ export function ProductDetailPage() {
   const secondaryName = lang === 'vi' ? product.name_en : product.name_vi
   const primaryDescription = lang === 'vi' ? product.description_vi || product.short_desc_vi : product.description_en || product.short_desc_en
   const secondaryDescription = lang === 'vi' ? product.short_desc_en : product.short_desc_vi
-  const images = product.images?.length ? product.images : [{ image_url: product.thumbnail_url }]
+  const images = product.images || []
+  const primaryImageUrl = images.find((image) => image.is_primary)?.image_url || images[0]?.image_url || ''
   const addToInquiry = () => {
     if (inquiryItems.some((item) => item.product_id === product.id)) {
       toast.info(lang === 'vi' ? 'Sản phẩm này đã có trong danh sách yêu cầu.' : 'This product is already in your inquiry list.')
       return
     }
-    dispatch(addInquiryItem({ product_id: product.id, product_name: primaryName, quantity: 1, specifications: '', notes: '', slug: product.slug, thumbnail_url: product.thumbnail_url }))
+    dispatch(addInquiryItem({ product_id: product.id, product_name: primaryName, quantity: 1, specifications: '', notes: '', slug: product.slug, thumbnail_url: primaryImageUrl }))
     toast.success(lang === 'vi' ? `Đã thêm “${primaryName}” vào danh sách yêu cầu.` : `“${primaryName}” was added to your inquiry list.`)
   }
   const moveZoom = (event) => { const rect = event.currentTarget.getBoundingClientRect(); setZoomOrigin(`${((event.clientX - rect.left) / rect.width) * 100}% ${((event.clientY - rect.top) / rect.height) * 100}%`) }
@@ -55,8 +57,8 @@ export function ProductDetailPage() {
       <Link to="/products" className={styles.back}><ArrowBackRoundedIcon />{text.back}</Link>
       <div className={styles.productLayout}>
         <section className={styles.gallery}>
-          <div className={styles.mainImage} onMouseMove={moveZoom}><img src={activeImage} alt={primaryName} style={{ transformOrigin: zoomOrigin }} /><span><ZoomInRoundedIcon />{text.zoom}</span></div>
-          <div className={styles.thumbnails}>{images.map((image) => <button key={image.id || image.image_url} className={activeImage === image.image_url ? styles.activeThumb : ''} onClick={() => setActiveImage(image.image_url)}><img src={image.image_url} alt="" loading="lazy" /></button>)}</div>
+          <div className={styles.mainImage} onMouseMove={moveZoom}>{activeImage ? <img src={activeImage} alt={primaryName} style={{ transformOrigin: zoomOrigin }} /> : <div className={styles.emptyGallery}><SetMealOutlinedIcon /><span>{lang === 'vi' ? 'Sản phẩm chưa có hình ảnh' : 'Product images coming soon'}</span></div>}{activeImage ? <span><ZoomInRoundedIcon />{text.zoom}</span> : null}</div>
+          {images.length > 1 ? <div className={styles.thumbnails}>{images.map((image) => <button key={image.id || image.image_url} className={activeImage === image.image_url ? styles.activeThumb : ''} onClick={() => setActiveImage(image.image_url)}><img src={image.image_url} alt={image.alt_text || ''} loading="lazy" /></button>)}</div> : null}
         </section>
         <section className={styles.details}>
           <p className={styles.category}>{lang === 'vi' ? product.category?.name_vi : product.category?.name_en}</p>
