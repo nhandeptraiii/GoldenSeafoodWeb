@@ -32,7 +32,12 @@ axiosClient.interceptors.response.use(
   (error) => {
     const message =
       error.response?.data?.message || error.message || 'Unexpected error from API service'
-    return Promise.reject(new Error(message))
+    const apiError = new Error(message)
+    apiError.validationErrors = Array.isArray(error.response?.data?.errors)
+      ? error.response.data.errors
+      : []
+    apiError.status = error.response?.status
+    return Promise.reject(apiError)
   },
 )
 

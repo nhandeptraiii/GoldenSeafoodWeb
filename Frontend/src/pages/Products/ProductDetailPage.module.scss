@@ -7,9 +7,12 @@
 .gallery { position: sticky; top: 105px; min-width: 0; }
 .mainImage { position: relative; overflow: hidden; aspect-ratio: 1 / .82; background: #eef1f2; }
 .mainImage img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .3s ease; }
+.emptyGallery { width: 100%; height: 100%; display: grid; place-items: center; align-content: center; gap: 12px; color: var(--gs-muted); }.emptyGallery svg { color: var(--gs-secondary-dark); font-size: 3.6rem; }.emptyGallery span { position: static; padding: 0; background: transparent; color: var(--gs-muted); font-size: .78rem; }
 .mainImage:hover img { transform: scale(1.75); }
 .mainImage span { position: absolute; right: 14px; bottom: 14px; display: flex; align-items: center; gap: 6px; padding: 7px 10px; background: rgba(6,28,46,.78); color: #fff; font-size: .68rem; pointer-events: none; }
 .mainImage span svg { font-size: 1rem; }
+.mainImage .emptyGallery span { position: static; padding: 0; background: transparent; color: var(--gs-muted); font-size: .78rem; pointer-events: auto; }
+.mainImage .emptyGallery svg { font-size: 3.6rem; }
 .thumbnails { display: flex; gap: 10px; margin-top: 12px; overflow-x: auto; }
 .thumbnails button { width: 82px; height: 68px; flex: 0 0 auto; padding: 3px; border: 1px solid var(--gs-line); background: #fff; cursor: pointer; }
 .thumbnails .activeThumb { border-color: var(--gs-secondary); }
