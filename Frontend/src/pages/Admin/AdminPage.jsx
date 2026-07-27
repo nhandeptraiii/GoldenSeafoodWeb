@@ -34,7 +34,14 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import LogoutIcon from '@mui/icons-material/Logout'
 import UploadIcon from '@mui/icons-material/Upload'
+import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded'
+import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded'
 import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import { toggleLanguage } from '../../redux/slices/languageSlice'
+import logo from '../../assets/logo.png'
+import styles from './AdminPage.module.scss'
 import {
   adminLogin,
   clearAdminSession,
@@ -82,12 +89,12 @@ const emptyProductForm = {
   short_desc_vi: '',
   description_en: '',
   description_vi: '',
-  thumbnail_url: '',
+  images: [],
   product_type: 'raw',
   is_featured: false,
   is_active: true,
   sort_order: 0,
-  specificationsText: '[]',
+  specifications: [{ spec_key_en: '', spec_key_vi: '', spec_value: '' }],
 }
 
 const defaultInquiryFilters = {
@@ -122,38 +129,15 @@ function formatDate(value) {
   return new Date(value).toLocaleString('vi-VN')
 }
 
-function productSpecsToText(specifications) {
-  if (!Array.isArray(specifications) || specifications.length === 0) {
-    return '[]'
-  }
-
-  return JSON.stringify(
-    specifications.map((item, index) => ({
-      spec_key_en: item.spec_key_en || '',
-      spec_key_vi: item.spec_key_vi || '',
-      spec_value: item.spec_value || '',
-      sort_order: item.sort_order || index + 1,
-    })),
-    null,
-    2,
-  )
-}
-
-function normalizeSpecifications(text) {
-  if (!text || !text.trim()) {
-    return []
-  }
-
-  const parsed = JSON.parse(text)
-  if (!Array.isArray(parsed)) {
-    throw new Error('Specifications must be a JSON array.')
-  }
-
-  return parsed.map((item, index) => ({
+function normalizeSpecifications(specifications) {
+  if (!Array.isArray(specifications)) return []
+  return specifications
+    .filter((item) => item.spec_key_en?.trim() || item.spec_key_vi?.trim() || item.spec_value?.trim())
+    .map((item, index) => ({
     spec_key_en: item.spec_key_en || '',
     spec_key_vi: item.spec_key_vi || '',
     spec_value: item.spec_value || '',
-    sort_order: item.sort_order || index + 1,
+    sort_order: index + 1,
   }))
 }
 
@@ -172,51 +156,87 @@ function getStatusColor(status) {
   }
 }
 
-function AdminLoginCard({ form, onChange, onSubmit, loading, error }) {
+const adminCopy = {
+  vi: {
+    portal: 'Cổng quản trị', management: 'Quản lý website', signInText: 'Đăng nhập để quản lý danh mục, sản phẩm và yêu cầu báo giá.', username: 'Tên đăng nhập', password: 'Mật khẩu', signingIn: 'Đang đăng nhập...', signIn: 'Đăng nhập',
+    loggedIn: 'Đăng nhập với tài khoản', logout: 'Đăng xuất', loading: 'Đang tải cổng quản trị...', overview: 'Tổng quan', categories: 'Danh mục', products: 'Sản phẩm', inquiries: 'Yêu cầu báo giá',
+    categoryHint: 'Nhóm danh mục hiện có', productHint: 'Sản phẩm trong catalog', newHint: 'Đang chờ xử lý', visibleHint: 'Bản ghi gần nhất',
+    overviewTitle: 'Tổng quan quản trị', overviewText: 'Theo dõi nhanh catalog và trạng thái yêu cầu báo giá.', categoryTitle: 'Quản lý danh mục', categoryText: 'Tạo, cập nhật và quản lý các nhóm sản phẩm.', productTitle: 'Quản lý sản phẩm', productText: 'Quản lý nội dung, trạng thái và thông số kỹ thuật.', inquiryTitle: 'Quản lý yêu cầu báo giá', inquiryText: 'Xem yêu cầu mới và cập nhật tiến trình xử lý.',
+    newCategory: 'Thêm danh mục', newProduct: 'Thêm sản phẩm', apply: 'Áp dụng bộ lọc', language: 'VI / EN',
+  },
+  en: {
+    portal: 'Admin Portal', management: 'Website Management', signInText: 'Sign in to manage categories, products and inquiries.', username: 'Username', password: 'Password', signingIn: 'Signing in...', signIn: 'Sign in',
+    loggedIn: 'Logged in as', logout: 'Logout', loading: 'Loading admin portal...', overview: 'Overview', categories: 'Categories', products: 'Products', inquiries: 'Inquiries',
+    categoryHint: 'Active taxonomy items', productHint: 'Catalog entries', newHint: 'Waiting for first action', visibleHint: 'Latest records',
+    overviewTitle: 'Admin overview', overviewText: 'Quick access to the current catalog and inquiry state.', categoryTitle: 'Category management', categoryText: 'Create, update and manage catalog groups.', productTitle: 'Product management', productText: 'Manage product metadata, status and technical specifications.', inquiryTitle: 'Inquiry management', inquiryText: 'Review incoming requests and move them through the workflow.',
+    newCategory: 'New category', newProduct: 'New product', apply: 'Apply filters', language: 'EN / VI',
+  },
+}
+
+function getAttachmentUrl(path) {
+  if (!path) return ''
+  if (/^https?:\/\//i.test(path)) return path
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api'
+  const backendOrigin = new URL(apiBaseUrl, window.location.origin).origin
+  return new URL(path.replace(/^\/+/, ''), `${backendOrigin}/`).toString()
+}
+
+function showAdminFormError(error, lang) {
+  if (error.validationErrors?.length) {
+    error.validationErrors.forEach((item) => {
+      const field = item.field ? `${item.field}: ` : ''
+      toast.error(`${field}${item.message}`)
+    })
+    return
+  }
+  toast.error(error.message || (lang === 'vi' ? 'Không thể lưu dữ liệu.' : 'Unable to save the form.'))
+}
+
+function AdminLoginCard({ form, onChange, onSubmit, loading, error, lang, onToggleLanguage }) {
+  const text = adminCopy[lang]
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
-      <Paper
-        elevation={8}
-        sx={{
-          p: 4,
-          borderRadius: 4,
-          background: 'linear-gradient(180deg, #ffffff 0%, #f7fbff 100%)',
-        }}
-      >
+    <Box className={styles.loginPage}>
+      <Box className={styles.loginVisual}>
+        <img src={logo} alt="Golden Seafood" />
+        <p>GOLDEN SEAFOOD</p>
+        <span>{lang === 'vi' ? 'Nguồn hàng Việt Nam · Tiêu chuẩn toàn cầu' : 'Vietnamese sourcing · Global standards'}</span>
+      </Box>
+      <Paper component="form" onSubmit={(event) => { event.preventDefault(); onSubmit() }} elevation={0} className={styles.loginCard}>
+        <Button className={styles.loginLanguage} variant="outlined" onClick={onToggleLanguage}>{text.language}</Button>
         <Stack spacing={2.5}>
           <Box>
             <Typography variant="overline" color="primary.main" sx={{ letterSpacing: 2 }}>
-              Admin Portal
+              {text.portal}
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 800, mt: 0.5 }}>
-              Website management
+              {text.management}
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
-              Sign in to manage categories, products and inquiries.
+              {text.signInText}
             </Typography>
           </Box>
 
           {error ? <Alert severity="error">{error}</Alert> : null}
 
           <TextField
-            label="Username"
+            label={text.username}
             value={form.username}
             onChange={(event) => onChange('username', event.target.value)}
             fullWidth
           />
           <TextField
-            label="Password"
+            label={text.password}
             type="password"
             value={form.password}
             onChange={(event) => onChange('password', event.target.value)}
             fullWidth
           />
-          <Button variant="contained" size="large" onClick={onSubmit} disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+          <Button type="submit" variant="contained" size="large" disabled={loading}>
+            {loading ? text.signingIn : text.signIn}
           </Button>
         </Stack>
       </Paper>
-    </Container>
+    </Box>
   )
 }
 
@@ -257,6 +277,9 @@ function StatCard({ label, value, hint }) {
 }
 
 export function AdminPage() {
+  const lang = useSelector((state) => state.language.current)
+  const dispatch = useDispatch()
+  const text = adminCopy[lang]
   const [bootstrapping, setBootstrapping] = useState(true)
   const [auth, setAuth] = useState({ token: '', user: null })
   const [loginForm, setLoginForm] = useState({ username: '', password: '' })
@@ -264,8 +287,9 @@ export function AdminPage() {
   const [loginError, setLoginError] = useState('')
 
   useEffect(() => {
-    document.title = 'Administration | Golden Seafood'
-  }, [])
+    document.title = `${lang === 'vi' ? 'Quản trị' : 'Administration'} | Golden Seafood`
+    document.documentElement.lang = lang
+  }, [lang])
 
   const [tab, setTab] = useState(0)
   const [alert, setAlert] = useState('')
@@ -468,6 +492,7 @@ export function AdminPage() {
       await loadCategories()
     } catch (error) {
       setAlert(error.message)
+      showAdminFormError(error, lang)
     } finally {
       setCategorySaving(false)
     }
@@ -485,6 +510,7 @@ export function AdminPage() {
       setCategoryUpload({ loading: false, error: '', success: true, preview: url })
     } catch (error) {
       setCategoryUpload({ loading: false, error: error.message, success: false, preview })
+      showAdminFormError(error, lang)
     }
   }
 
@@ -525,18 +551,20 @@ export function AdminPage() {
         short_desc_vi: detail.short_desc_vi || '',
         description_en: detail.description_en || '',
         description_vi: detail.description_vi || '',
-        thumbnail_url: detail.thumbnail_url || '',
+        images: (detail.images || []).map((item, index) => ({ image_url: item.image_url, alt_text: item.alt_text || '', is_primary: Boolean(item.is_primary) || (!detail.images?.some((image) => image.is_primary) && index === 0) })),
         product_type: detail.product_type || 'raw',
         is_featured: Boolean(detail.is_featured),
         is_active: Boolean(detail.is_active),
         sort_order: detail.sort_order ?? 0,
-        specificationsText: productSpecsToText(detail.specifications),
+        specifications: detail.specifications?.length
+          ? detail.specifications.map((item) => ({ spec_key_en: item.spec_key_en || '', spec_key_vi: item.spec_key_vi || '', spec_value: item.spec_value || '' }))
+          : [{ spec_key_en: '', spec_key_vi: '', spec_value: '' }],
       })
       setProductUpload({
         loading: false,
         error: '',
-        success: Boolean(detail.thumbnail_url),
-        preview: detail.thumbnail_url || '',
+        success: Boolean(detail.images?.length),
+        preview: '',
       })
       setProductDialogOpen(true)
     } catch (error) {
@@ -545,8 +573,10 @@ export function AdminPage() {
   }
 
   const saveProduct = async () => {
-    if (productUpload.loading || !productUpload.success || !productForm.thumbnail_url) {
-      setProductUpload((current) => ({ ...current, error: 'Upload an image successfully before saving.' }))
+    if (productUpload.loading || !productForm.images.length) {
+      const message = lang === 'vi' ? 'Vui lòng tải lên ít nhất một ảnh sản phẩm.' : 'Upload at least one product image before saving.'
+      setProductUpload((current) => ({ ...current, error: message }))
+      toast.error(message)
       return
     }
 
@@ -557,11 +587,11 @@ export function AdminPage() {
         ...productForm,
         category_id: Number(productForm.category_id),
         sort_order: Number(productForm.sort_order || 0),
-        specifications: normalizeSpecifications(productForm.specificationsText),
+        images: productForm.images.map((image, index) => ({ image_url: image.image_url, alt_text: image.alt_text || productForm.name_en, is_primary: image.is_primary, sort_order: index })),
+        specifications: normalizeSpecifications(productForm.specifications),
       }
 
       delete payload.id
-      delete payload.specificationsText
 
       if (productForm.id) {
         await updateAdminProduct(productForm.id, payload)
@@ -573,26 +603,57 @@ export function AdminPage() {
       await Promise.all([loadProducts(), loadCategories()])
     } catch (error) {
       setAlert(error.message)
+      showAdminFormError(error, lang)
     } finally {
       setProductSaving(false)
     }
   }
 
-  const uploadThumbnail = async (file) => {
-    if (!file) {
-      return
-    }
-
-    const preview = URL.createObjectURL(file)
-    setProductForm((current) => ({ ...current, thumbnail_url: '' }))
-    setProductUpload({ loading: true, error: '', success: false, preview })
+  const uploadProductImages = async (files) => {
+    const selectedFiles = Array.from(files || [])
+    if (!selectedFiles.length) return
+    setProductUpload((current) => ({ ...current, loading: true, error: '' }))
     try {
-      const url = await uploadProductImage(file)
-      setProductForm((current) => ({ ...current, thumbnail_url: url }))
-      setProductUpload({ loading: false, error: '', success: true, preview: url })
+      const urls = await Promise.all(selectedFiles.map((file) => uploadProductImage(file)))
+      setProductForm((current) => {
+        const hasPrimary = current.images.some((image) => image.is_primary)
+        const appended = urls.map((url, index) => ({ image_url: url, alt_text: current.name_en ? `${current.name_en}${current.images.length + index ? ` - ${current.images.length + index}` : ''}` : selectedFiles[index].name.replace(/\.[^.]+$/, ''), is_primary: !hasPrimary && index === 0 }))
+        return { ...current, images: [...current.images, ...appended] }
+      })
+      setProductUpload({ loading: false, error: '', success: true, preview: '' })
+      toast.success(lang === 'vi' ? `Đã tải lên ${urls.length} ảnh.` : `${urls.length} images uploaded.`)
     } catch (error) {
-      setProductUpload({ loading: false, error: error.message, success: false, preview })
+      setProductUpload({ loading: false, error: error.message, success: false, preview: '' })
+      showAdminFormError(error, lang)
     }
+  }
+
+  const setPrimaryProductImage = (index) => {
+    setProductForm((current) => ({ ...current, images: current.images.map((image, imageIndex) => ({ ...image, is_primary: imageIndex === index })) }))
+  }
+
+  const updateProductImageAlt = (index, value) => {
+    setProductForm((current) => ({ ...current, images: current.images.map((image, imageIndex) => imageIndex === index ? { ...image, alt_text: value } : image) }))
+  }
+
+  const removeProductImage = (index) => {
+    setProductForm((current) => {
+      const removedPrimary = current.images[index]?.is_primary
+      const images = current.images.filter((_, imageIndex) => imageIndex !== index)
+      return { ...current, images: removedPrimary && images.length ? images.map((image, imageIndex) => ({ ...image, is_primary: imageIndex === 0 })) : images }
+    })
+  }
+
+  const addSpecificationRow = () => {
+    setProductForm((current) => ({ ...current, specifications: [...current.specifications, { spec_key_en: '', spec_key_vi: '', spec_value: '' }] }))
+  }
+
+  const updateSpecificationRow = (index, field, value) => {
+    setProductForm((current) => ({ ...current, specifications: current.specifications.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item) }))
+  }
+
+  const removeSpecificationRow = (index) => {
+    setProductForm((current) => ({ ...current, specifications: current.specifications.filter((_, itemIndex) => itemIndex !== index) }))
   }
 
   const removeProduct = async (product) => {
@@ -654,19 +715,19 @@ export function AdminPage() {
 
   const summaryCards = useMemo(
     () => [
-      { label: 'Categories', value: categories.length, hint: 'Active taxonomy items' },
-      { label: 'Products', value: productPagination?.totalItems ?? products.length, hint: 'Catalog entries' },
-      { label: 'New inquiries', value: newInquiryCount, hint: 'Waiting for first action' },
-      { label: 'Visible inquiries', value: inquiryPagination?.totalItems ?? inquiries.length, hint: 'Latest records' },
+      { label: text.categories, value: categories.length, hint: text.categoryHint },
+      { label: text.products, value: productPagination?.totalItems ?? products.length, hint: text.productHint },
+      { label: lang === 'vi' ? 'Yêu cầu mới' : 'New inquiries', value: newInquiryCount, hint: text.newHint },
+      { label: lang === 'vi' ? 'Yêu cầu hiển thị' : 'Visible inquiries', value: inquiryPagination?.totalItems ?? inquiries.length, hint: text.visibleHint },
     ],
-    [categories.length, inquiries.length, newInquiryCount, productPagination?.totalItems, products.length, inquiryPagination?.totalItems],
+    [categories.length, inquiries.length, newInquiryCount, productPagination?.totalItems, products.length, inquiryPagination?.totalItems, lang, text],
   )
 
   if (bootstrapping) {
     return (
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Paper sx={{ p: 4, borderRadius: 4 }}>
-          <Typography>Loading admin portal...</Typography>
+          <Typography>{text.loading}</Typography>
         </Paper>
       </Container>
     )
@@ -680,36 +741,39 @@ export function AdminPage() {
         loading={loginLoading}
         onChange={(field, value) => setLoginForm((current) => ({ ...current, [field]: value }))}
         onSubmit={handleLogin}
+        lang={lang}
+        onToggleLanguage={() => dispatch(toggleLanguage())}
       />
     )
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="sticky" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(18px)' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-          <Box>
+    <Box className={styles.adminRoot}>
+      <AppBar position="sticky" elevation={0} className={styles.adminBar}>
+        <Toolbar className={styles.adminToolbar}>
+          <Box className={styles.adminBrand}>
+            <img src={logo} alt="Golden Seafood" />
+            <Box>
             <Typography variant="h6" sx={{ fontWeight: 800 }}>
               Golden Seafood Admin
             </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Logged in as {auth.user?.full_name || auth.user?.username || 'admin'}
+            <Typography variant="caption">
+              {text.loggedIn} {auth.user?.full_name || auth.user?.username || 'admin'}
             </Typography>
+            </Box>
           </Box>
-          <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}>
-            Logout
-          </Button>
+          <Box className={styles.adminActions}><Button variant="outlined" onClick={() => dispatch(toggleLanguage())}>{text.language}</Button><Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}>{text.logout}</Button></Box>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" className={styles.adminContent}>
         {alert ? (
           <Alert severity="info" sx={{ mb: 2 }} onClose={() => setAlert('')}>
             {alert}
           </Alert>
         ) : null}
 
-        <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid container spacing={2} sx={{ mb: 3 }} className={styles.statGrid}>
           {summaryCards.map((item) => (
             <Grid key={item.label} item xs={12} sm={6} lg={3}>
               <StatCard {...item} />
@@ -717,20 +781,20 @@ export function AdminPage() {
           ))}
         </Grid>
 
-        <Paper sx={{ borderRadius: 4, overflow: 'hidden' }}>
+        <Paper className={styles.workspace}>
           <Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ px: 2, pt: 1 }}>
-            <Tab label="Overview" />
-            <Tab label="Categories" />
-            <Tab label="Products" />
-            <Tab label="Inquiries" />
+            <Tab label={text.overview} />
+            <Tab label={text.categories} />
+            <Tab label={text.products} />
+            <Tab label={text.inquiries} />
           </Tabs>
 
           <Box sx={{ p: 3 }}>
             {tab === 0 ? (
               <Stack spacing={3}>
                 <SectionHeader
-                  title="Admin overview"
-                  subtitle="Quick access to the current catalog and inquiry state."
+                  title={text.overviewTitle}
+                  subtitle={text.overviewText}
                   action={null}
                 />
                 <Grid container spacing={2}>
@@ -757,8 +821,8 @@ export function AdminPage() {
             {tab === 1 ? (
               <Stack spacing={2}>
                 <SectionHeader
-                  title="Category management"
-                  subtitle="Create, update and remove catalog groups."
+                  title={text.categoryTitle}
+                  subtitle={text.categoryText}
                   action={
                     <Button
                       startIcon={<AddIcon />}
@@ -766,7 +830,7 @@ export function AdminPage() {
                       onClick={() => openCategoryDialog()}
                       disabled={loading.categories}
                     >
-                      New category
+                      {text.newCategory}
                     </Button>
                   }
                 />
@@ -778,9 +842,9 @@ export function AdminPage() {
                         <TableCell>EN</TableCell>
                         <TableCell>VI</TableCell>
                         <TableCell>Slug</TableCell>
-                        <TableCell>Products</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell>{text.products}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Trạng thái' : 'Status'}</TableCell>
+                        <TableCell align="right">{lang === 'vi' ? 'Thao tác' : 'Actions'}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -818,8 +882,8 @@ export function AdminPage() {
             {tab === 2 ? (
               <Stack spacing={2}>
                 <SectionHeader
-                  title="Product management"
-                  subtitle="Manage product metadata, status and technical specifications."
+                  title={text.productTitle}
+                  subtitle={text.productText}
                   action={
                     <Button
                       startIcon={<AddIcon />}
@@ -827,7 +891,7 @@ export function AdminPage() {
                       onClick={() => openProductDialog()}
                       disabled={loading.products}
                     >
-                      New product
+                      {text.newProduct}
                     </Button>
                   }
                 />
@@ -837,7 +901,7 @@ export function AdminPage() {
                     <TextField
                       fullWidth
                       size="small"
-                      label="Search"
+                      label={lang === 'vi' ? 'Tìm kiếm' : 'Search'}
                       value={productFilters.search}
                       onChange={(event) =>
                         setProductFilters((current) => ({ ...current, search: event.target.value }))
@@ -854,7 +918,7 @@ export function AdminPage() {
                         setProductFilters((current) => ({ ...current, category_id: event.target.value }))
                       }
                     >
-                      <MenuItem value="">All categories</MenuItem>
+                      <MenuItem value="">{lang === 'vi' ? 'Tất cả danh mục' : 'All categories'}</MenuItem>
                       {categories.map((category) => (
                         <MenuItem key={category.id} value={category.id}>
                           {category.name_en}
@@ -872,7 +936,7 @@ export function AdminPage() {
                         setProductFilters((current) => ({ ...current, type: event.target.value }))
                       }
                     >
-                      <MenuItem value="">All types</MenuItem>
+                      <MenuItem value="">{lang === 'vi' ? 'Tất cả loại' : 'All types'}</MenuItem>
                       {productTypeOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
                           {item.label}
@@ -888,19 +952,19 @@ export function AdminPage() {
                   sx={{ alignSelf: 'flex-start' }}
                   disabled={loading.products}
                 >
-                  Apply filters
+                  {text.apply}
                 </Button>
 
                 <TableContainer component={Paper} variant="outlined">
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell>Category</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Flags</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Sản phẩm' : 'Product'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Danh mục' : 'Category'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Loại' : 'Type'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Thuộc tính' : 'Flags'}</TableCell>
                         <TableCell>Slug</TableCell>
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell align="right">{lang === 'vi' ? 'Thao tác' : 'Actions'}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -954,8 +1018,8 @@ export function AdminPage() {
             {tab === 3 ? (
               <Stack spacing={2}>
                 <SectionHeader
-                  title="Inquiry management"
-                  subtitle="Review incoming requests and move them through the workflow."
+                  title={text.inquiryTitle}
+                  subtitle={text.inquiryText}
                 />
 
                 <Grid container spacing={2} sx={{ mb: 1 }}>
@@ -963,7 +1027,7 @@ export function AdminPage() {
                     <TextField
                       fullWidth
                       size="small"
-                      label="Search"
+                      label={lang === 'vi' ? 'Tìm kiếm' : 'Search'}
                       value={inquiryFilters.search}
                       onChange={(event) =>
                         setInquiryFilters((current) => ({ ...current, search: event.target.value }))
@@ -980,7 +1044,7 @@ export function AdminPage() {
                         setInquiryFilters((current) => ({ ...current, status: event.target.value }))
                       }
                     >
-                      <MenuItem value="">All statuses</MenuItem>
+                      <MenuItem value="">{lang === 'vi' ? 'Tất cả trạng thái' : 'All statuses'}</MenuItem>
                       {statusOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
                           {item.label}
@@ -998,7 +1062,7 @@ export function AdminPage() {
                         setInquiryFilters((current) => ({ ...current, source: event.target.value }))
                       }
                     >
-                      <MenuItem value="">All sources</MenuItem>
+                      <MenuItem value="">{lang === 'vi' ? 'Tất cả nguồn' : 'All sources'}</MenuItem>
                       {sourceOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
                           {item.label}
@@ -1014,20 +1078,20 @@ export function AdminPage() {
                   sx={{ alignSelf: 'flex-start' }}
                   disabled={loading.inquiries}
                 >
-                  Apply filters
+                  {text.apply}
                 </Button>
 
                 <TableContainer component={Paper} variant="outlined">
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Code</TableCell>
-                        <TableCell>Customer</TableCell>
-                        <TableCell>Company</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Source</TableCell>
-                        <TableCell>Created</TableCell>
-                        <TableCell align="right">Actions</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Mã' : 'Code'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Khách hàng' : 'Customer'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Công ty' : 'Company'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Trạng thái' : 'Status'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Nguồn' : 'Source'}</TableCell>
+                        <TableCell>{lang === 'vi' ? 'Ngày tạo' : 'Created'}</TableCell>
+                        <TableCell align="right">{lang === 'vi' ? 'Thao tác' : 'Actions'}</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -1051,7 +1115,7 @@ export function AdminPage() {
                           <TableCell align="right">
                             <Stack direction="row" spacing={1} justifyContent="flex-end">
                               <Button size="small" variant="outlined" onClick={() => openInquiryDialog(inquiry)}>
-                                View
+                                {lang === 'vi' ? 'Xem' : 'View'}
                               </Button>
                               <IconButton onClick={() => removeInquiry(inquiry)}>
                                 <DeleteIcon fontSize="small" />
@@ -1134,12 +1198,16 @@ export function AdminPage() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={productDialogOpen} onClose={() => !productUpload.loading && setProductDialogOpen(false)} fullWidth maxWidth="md">
-        <DialogTitle>{productForm.id ? 'Edit product' : 'New product'}</DialogTitle>
-        <DialogContent sx={{ pt: 1.5 }}>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+      <Dialog open={productDialogOpen} onClose={() => !productUpload.loading && setProductDialogOpen(false)} fullWidth maxWidth="md" className={styles.productDialog}>
+        <DialogTitle className={styles.productDialogTitle}>
+          <span>{productForm.id ? (lang === 'vi' ? 'Chỉnh sửa sản phẩm' : 'Edit product') : (lang === 'vi' ? 'Thêm sản phẩm mới' : 'New product')}</span>
+          <small>{lang === 'vi' ? 'Cập nhật nội dung song ngữ, hình ảnh và thông số kỹ thuật.' : 'Manage bilingual content, imagery and technical specifications.'}</small>
+        </DialogTitle>
+        <DialogContent className={styles.productDialogContent}>
+          <Stack spacing={3}>
+            <Grid container spacing={2.2} alignItems="stretch">
+              <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '01 · Thông tin cơ bản' : '01 · Basic information'}</Typography></Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="English name"
                   value={productForm.name_en}
@@ -1147,7 +1215,7 @@ export function AdminPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Vietnamese name"
                   value={productForm.name_vi}
@@ -1155,7 +1223,7 @@ export function AdminPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Select
                   fullWidth
                   value={productForm.category_id}
@@ -1170,7 +1238,7 @@ export function AdminPage() {
                   ))}
                 </Select>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Select
                   fullWidth
                   value={productForm.product_type}
@@ -1183,29 +1251,24 @@ export function AdminPage() {
                   ))}
                 </Select>
               </Grid>
-              <Grid item xs={12} md={6}>
-                {productUpload.preview ? (
-                  <Box
-                    component="img"
-                    src={productUpload.preview}
-                    alt="Product thumbnail preview"
-                    sx={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}
-                  />
-                ) : (
-                  <Paper variant="outlined" sx={{ height: 180, display: 'grid', placeItems: 'center' }}>
-                    <Typography color="text.secondary">No image selected</Typography>
-                  </Paper>
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Button component="label" variant="outlined" startIcon={productUpload.loading ? <CircularProgress size={18} /> : <UploadIcon />} disabled={productUpload.loading} fullWidth sx={{ height: '100%' }}>
-                  {productUpload.loading ? 'Uploading thumbnail...' : 'Select and upload thumbnail'}
-                  <input hidden type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => uploadThumbnail(event.target.files?.[0])} />
+              <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '02 · Hình ảnh đại diện' : '02 · Product image'}</Typography></Grid>
+              <Grid size={{ xs: 12 }}>
+                <Button component="label" variant="outlined" startIcon={productUpload.loading ? <CircularProgress size={18} /> : <UploadIcon />} disabled={productUpload.loading} className={styles.multiImageUpload}>
+                  {productUpload.loading ? (lang === 'vi' ? 'Đang tải ảnh...' : 'Uploading images...') : (lang === 'vi' ? 'Chọn và tải nhiều ảnh' : 'Select and upload multiple images')}
+                  <input hidden multiple type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => { uploadProductImages(event.target.files); event.target.value = '' }} />
                 </Button>
               </Grid>
-              {productUpload.success ? <Grid item xs={12}><Alert severity="success">Product image uploaded successfully.</Alert></Grid> : null}
-              {productUpload.error ? <Grid item xs={12}><Alert severity="error">{productUpload.error}</Alert></Grid> : null}
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12 }}>
+                {productForm.images.length ? <div className={styles.productImageGrid}>{productForm.images.map((image, index) => <article className={`${styles.productImageCard} ${image.is_primary ? styles.primaryImageCard : ''}`} key={`${image.image_url}-${index}`}>
+                  <div className={styles.productImagePreview}><img src={image.image_url} alt={image.alt_text || `Product ${index + 1}`} /><span>#{index + 1}</span>{image.is_primary ? <b>{lang === 'vi' ? 'Ảnh chính' : 'Primary'}</b> : null}</div>
+                  <TextField size="small" label="Alt text" value={image.alt_text} onChange={(event) => updateProductImageAlt(index, event.target.value)} />
+                  <div className={styles.productImageActions}><Button size="small" variant={image.is_primary ? 'contained' : 'outlined'} onClick={() => setPrimaryProductImage(index)}>{image.is_primary ? (lang === 'vi' ? 'Đang là ảnh chính' : 'Primary image') : (lang === 'vi' ? 'Chọn làm ảnh chính' : 'Set as primary')}</Button><IconButton color="error" onClick={() => removeProductImage(index)}><DeleteIcon /></IconButton></div>
+                </article>)}</div> : <Paper variant="outlined" className={styles.noProductImages}><Typography color="text.secondary">{lang === 'vi' ? 'Chưa có ảnh sản phẩm.' : 'No product images uploaded.'}</Typography></Paper>}
+              </Grid>
+              {productUpload.success ? <Grid size={{ xs: 12 }}><Alert severity="success">{lang === 'vi' ? 'Tải ảnh sản phẩm thành công.' : 'Product image uploaded successfully.'}</Alert></Grid> : null}
+              {productUpload.error ? <Grid size={{ xs: 12 }}><Alert severity="error">{productUpload.error}</Alert></Grid> : null}
+              <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '03 · Hiển thị và sắp xếp' : '03 · Display settings'}</Typography></Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <TextField
                   label="Sort order"
                   type="number"
@@ -1214,7 +1277,7 @@ export function AdminPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Select
                   fullWidth
                   value={productForm.is_featured ? 'true' : 'false'}
@@ -1226,7 +1289,7 @@ export function AdminPage() {
                   <MenuItem value="false">Normal</MenuItem>
                 </Select>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Select
                   fullWidth
                   value={productForm.is_active ? 'true' : 'false'}
@@ -1238,7 +1301,8 @@ export function AdminPage() {
                   <MenuItem value="false">Inactive</MenuItem>
                 </Select>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '04 · Nội dung mô tả' : '04 · Product content'}</Typography></Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Short description EN"
                   value={productForm.short_desc_en}
@@ -1248,7 +1312,7 @@ export function AdminPage() {
                   minRows={2}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Short description VI"
                   value={productForm.short_desc_vi}
@@ -1258,7 +1322,7 @@ export function AdminPage() {
                   minRows={2}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Description EN"
                   value={productForm.description_en}
@@ -1268,7 +1332,7 @@ export function AdminPage() {
                   minRows={3}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Description VI"
                   value={productForm.description_vi}
@@ -1278,28 +1342,31 @@ export function AdminPage() {
                   minRows={3}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Specifications JSON"
-                  helperText='Example: [{"spec_key_en":"Size","spec_key_vi":"Cỡ","spec_value":"16/20"}]'
-                  value={productForm.specificationsText}
-                  onChange={(event) =>
-                    setProductForm((current) => ({ ...current, specificationsText: event.target.value }))
-                  }
-                  fullWidth
-                  multiline
-                  minRows={6}
-                />
+              <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '05 · Thông số kỹ thuật' : '05 · Technical specifications'}</Typography></Grid>
+              <Grid size={{ xs: 12 }}>
+                <Stack spacing={1.4}>
+                  {(productForm.specifications || []).map((specification, index) => (
+                    <Box className={styles.specificationRow} key={index}>
+                      <span className={styles.specificationOrder}>{index + 1}</span>
+                      <TextField label={lang === 'vi' ? 'Tên thông số (EN)' : 'Specification key (EN)'} value={specification.spec_key_en} onChange={(event) => updateSpecificationRow(index, 'spec_key_en', event.target.value)} />
+                      <TextField label={lang === 'vi' ? 'Tên thông số (VI)' : 'Specification key (VI)'} value={specification.spec_key_vi} onChange={(event) => updateSpecificationRow(index, 'spec_key_vi', event.target.value)} />
+                      <TextField label={lang === 'vi' ? 'Giá trị thông số' : 'Specification value'} value={specification.spec_value} onChange={(event) => updateSpecificationRow(index, 'spec_value', event.target.value)} />
+                      <IconButton color="error" onClick={() => removeSpecificationRow(index)} aria-label={lang === 'vi' ? `Xóa dòng ${index + 1}` : `Remove row ${index + 1}`}><DeleteIcon /></IconButton>
+                    </Box>
+                  ))}
+                  <Button className={styles.addSpecificationButton} startIcon={<AddIcon />} variant="outlined" onClick={addSpecificationRow}>{lang === 'vi' ? 'Thêm dòng thông số' : 'Add specification row'}</Button>
+                  <Typography variant="caption" color="text.secondary">{lang === 'vi' ? 'Thứ tự được tự động đánh số theo vị trí dòng.' : 'Sort order is assigned automatically from the row position.'}</Typography>
+                </Stack>
               </Grid>
             </Grid>
           </Stack>
         </DialogContent>
-        <DialogActions>
+        <DialogActions className={styles.productDialogActions}>
           <Button onClick={() => setProductDialogOpen(false)} disabled={productUpload.loading || productSaving}>Cancel</Button>
           <Button
             variant="contained"
             onClick={saveProduct}
-            disabled={productUpload.loading || productSaving || !productUpload.success || !productForm.thumbnail_url}
+            disabled={productUpload.loading || productSaving || !productForm.images.length}
           >
             {productSaving ? 'Saving...' : 'Save'}
           </Button>
@@ -1345,33 +1412,80 @@ export function AdminPage() {
                 </Grid>
               </Grid>
 
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography fontWeight={700} sx={{ mb: 1 }}>
-                  Items
-                </Typography>
-                <TableContainer>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell>Specs</TableCell>
-                        <TableCell>Qty</TableCell>
-                        <TableCell>Notes</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {(selectedInquiry.items || []).map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell>{item.product_name_snapshot}</TableCell>
-                          <TableCell>{item.specifications || '-'}</TableCell>
-                          <TableCell>{item.quantity || '-'}</TableCell>
-                          <TableCell>{item.notes || '-'}</TableCell>
+              {selectedInquiry.source === 'inquiry_basket' ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography fontWeight={700} sx={{ mb: 1 }}>
+                    {lang === 'vi' ? 'Sản phẩm yêu cầu báo giá' : 'Inquiry products'}
+                  </Typography>
+                  <TableContainer>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>{lang === 'vi' ? 'Sản phẩm' : 'Product'}</TableCell>
+                          <TableCell>{lang === 'vi' ? 'Quy cách' : 'Specs'}</TableCell>
+                          <TableCell>{lang === 'vi' ? 'Số lượng' : 'Qty'}</TableCell>
+                          <TableCell>{lang === 'vi' ? 'Ghi chú' : 'Notes'}</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Paper>
+                      </TableHead>
+                      <TableBody>
+                        {(selectedInquiry.items || []).map((item) => (
+                          <TableRow key={item.id}>
+                            <TableCell>{item.product_name_snapshot}</TableCell>
+                            <TableCell>{item.specifications || '-'}</TableCell>
+                            <TableCell>{item.quantity || '-'}</TableCell>
+                            <TableCell>{item.notes || '-'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              ) : null}
+
+              {selectedInquiry.source === 'contact_form' ? (
+                <Paper variant="outlined" sx={{ p: 2 }}>
+                  <Typography fontWeight={700} sx={{ mb: 1.5 }}>
+                    {lang === 'vi' ? 'Nội dung từ biểu mẫu liên hệ' : 'Contact form details'}
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        {lang === 'vi' ? 'Mặt hàng quan tâm' : 'Interested species'}
+                      </Typography>
+                      <Stack direction="row" gap={1} flexWrap="wrap" sx={{ mt: 0.7 }}>
+                        {(selectedInquiry.interested_species || []).length
+                          ? selectedInquiry.interested_species.map((species) => <Chip key={species} size="small" label={species} color="secondary" variant="outlined" />)
+                          : <Typography variant="body2">-</Typography>}
+                      </Stack>
+                    </Box>
+
+                    <Box sx={{ pt: 1.5, borderTop: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {lang === 'vi' ? 'Tệp Spec Sheet / Artwork đính kèm' : 'Attached Spec Sheet / Artwork'}
+                      </Typography>
+                      {selectedInquiry.attachment_url ? (
+                        <Box sx={{ mt: 1.2 }}>
+                          <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" gap={1.5} sx={{ p: 1.5, bgcolor: 'rgba(201,164,92,.09)', border: '1px solid rgba(201,164,92,.35)' }}>
+                            <Stack direction="row" spacing={1.2} alignItems="center">
+                              <AttachFileRoundedIcon color="secondary" />
+                              <Box>
+                                <Typography variant="body2" fontWeight={700}>{selectedInquiry.attachment_url.split('/').pop()}</Typography>
+                                <Typography variant="caption" color="text.secondary">{selectedInquiry.attachment_url}</Typography>
+                              </Box>
+                            </Stack>
+                            <Button href={getAttachmentUrl(selectedInquiry.attachment_url)} target="_blank" rel="noreferrer" variant="contained" size="small" endIcon={<OpenInNewRoundedIcon />}>
+                              {lang === 'vi' ? 'Mở tệp' : 'Open file'}
+                            </Button>
+                          </Stack>
+                          {selectedInquiry.attachment_url.toLowerCase().endsWith('.pdf') ? (
+                            <Box component="iframe" title={lang === 'vi' ? 'Xem trước tệp đính kèm' : 'Attachment preview'} src={getAttachmentUrl(selectedInquiry.attachment_url)} sx={{ width: '100%', height: { xs: 420, md: 560 }, mt: 1.5, border: '1px solid', borderColor: 'divider', bgcolor: '#f5f5f5' }} />
+                          ) : null}
+                        </Box>
+                      ) : <Typography variant="body2" sx={{ mt: .7 }}>— {lang === 'vi' ? 'Không có tệp đính kèm' : 'No attachment'}</Typography>}
+                    </Box>
+                  </Stack>
+                </Paper>
+              ) : null}
 
               <Paper variant="outlined" sx={{ p: 2 }}>
                 <Typography fontWeight={700}>Message</Typography>
