@@ -242,13 +242,7 @@ function AdminLoginCard({ form, onChange, onSubmit, loading, error, lang, onTogg
 
 function SectionHeader({ title, subtitle, action }) {
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      spacing={2}
-      alignItems={{ xs: 'flex-start', sm: 'center' }}
-      justifyContent="space-between"
-      sx={{ mb: 2 }}
-    >
+    <Box sx={{ mb: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between' }}>
       <Box>
         <Typography variant="h5" sx={{ fontWeight: 800 }}>
           {title}
@@ -256,7 +250,7 @@ function SectionHeader({ title, subtitle, action }) {
         <Typography color="text.secondary">{subtitle}</Typography>
       </Box>
       {action}
-    </Stack>
+    </Box>
   )
 }
 
@@ -476,6 +470,7 @@ export function AdminPage() {
 
     setCategorySaving(true)
     try {
+      const isEditing = Boolean(categoryForm.id)
       const payload = {
         name_en: categoryForm.name_en,
         name_vi: categoryForm.name_vi,
@@ -488,6 +483,11 @@ export function AdminPage() {
       } else {
         await createAdminCategory(payload)
       }
+      toast.success(
+        lang === 'vi'
+          ? isEditing ? 'Cập nhật danh mục thành công.' : 'Thêm danh mục thành công.'
+          : isEditing ? 'Category updated successfully.' : 'Category created successfully.',
+      )
       setCategoryDialogOpen(false)
       await loadCategories()
     } catch (error) {
@@ -583,6 +583,7 @@ export function AdminPage() {
     setProductSaving(true)
     setAlert('')
     try {
+      const isEditing = Boolean(productForm.id)
       const payload = {
         ...productForm,
         category_id: Number(productForm.category_id),
@@ -598,6 +599,12 @@ export function AdminPage() {
       } else {
         await createAdminProduct(payload)
       }
+
+      toast.success(
+        lang === 'vi'
+          ? isEditing ? 'Cập nhật sản phẩm thành công.' : 'Thêm sản phẩm thành công.'
+          : isEditing ? 'Product updated successfully.' : 'Product created successfully.',
+      )
 
       setProductDialogOpen(false)
       await Promise.all([loadProducts(), loadCategories()])
@@ -775,7 +782,7 @@ export function AdminPage() {
 
         <Grid container spacing={2} sx={{ mb: 3 }} className={styles.statGrid}>
           {summaryCards.map((item) => (
-            <Grid key={item.label} item xs={12} sm={6} lg={3}>
+            <Grid key={item.label} size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard {...item} />
             </Grid>
           ))}
@@ -799,7 +806,7 @@ export function AdminPage() {
                 />
                 <Grid container spacing={2}>
                   {categories.slice(0, 5).map((category) => (
-                    <Grid key={category.id} item xs={12} sm={6} md={4} lg={3}>
+                    <Grid key={category.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 3 }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                           {category.name_en}
@@ -862,7 +869,7 @@ export function AdminPage() {
                             />
                           </TableCell>
                           <TableCell align="right">
-                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                            <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
                               <IconButton onClick={() => openCategoryDialog(category)}>
                                 <EditIcon fontSize="small" />
                               </IconButton>
@@ -897,7 +904,7 @@ export function AdminPage() {
                 />
 
                 <Grid container spacing={2} sx={{ mb: 1 }}>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <TextField
                       fullWidth
                       size="small"
@@ -908,7 +915,7 @@ export function AdminPage() {
                       }
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Select
                       fullWidth
                       size="small"
@@ -926,7 +933,7 @@ export function AdminPage() {
                       ))}
                     </Select>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Select
                       fullWidth
                       size="small"
@@ -990,7 +997,7 @@ export function AdminPage() {
                           </TableCell>
                           <TableCell>{product.slug}</TableCell>
                           <TableCell align="right">
-                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                            <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
                               <IconButton onClick={() => openProductDialog(product)}>
                                 <EditIcon fontSize="small" />
                               </IconButton>
@@ -1023,7 +1030,7 @@ export function AdminPage() {
                 />
 
                 <Grid container spacing={2} sx={{ mb: 1 }}>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <TextField
                       fullWidth
                       size="small"
@@ -1034,7 +1041,7 @@ export function AdminPage() {
                       }
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Select
                       fullWidth
                       size="small"
@@ -1052,7 +1059,7 @@ export function AdminPage() {
                       ))}
                     </Select>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <Select
                       fullWidth
                       size="small"
@@ -1113,7 +1120,7 @@ export function AdminPage() {
                           <TableCell>{inquiry.source}</TableCell>
                           <TableCell>{formatDate(inquiry.created_at)}</TableCell>
                           <TableCell align="right">
-                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                            <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
                               <Button size="small" variant="outlined" onClick={() => openInquiryDialog(inquiry)}>
                                 {lang === 'vi' ? 'Xem' : 'View'}
                               </Button>
@@ -1205,11 +1212,11 @@ export function AdminPage() {
         </DialogTitle>
         <DialogContent className={styles.productDialogContent}>
           <Stack spacing={3}>
-            <Grid container spacing={2.2} alignItems="stretch">
+            <Grid container spacing={2.2} sx={{ alignItems: 'stretch' }}>
               <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '01 · Thông tin cơ bản' : '01 · Basic information'}</Typography></Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
-                  label="English name"
+                  label={lang === 'vi' ? 'Tên sản phẩm tiếng Anh' : 'English name'}
                   value={productForm.name_en}
                   onChange={(event) => setProductForm((current) => ({ ...current, name_en: event.target.value }))}
                   fullWidth
@@ -1217,7 +1224,7 @@ export function AdminPage() {
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
-                  label="Vietnamese name"
+                  label={lang === 'vi' ? 'Tên sản phẩm tiếng Việt' : 'Vietnamese name'}
                   value={productForm.name_vi}
                   onChange={(event) => setProductForm((current) => ({ ...current, name_vi: event.target.value }))}
                   fullWidth
@@ -1230,10 +1237,10 @@ export function AdminPage() {
                   displayEmpty
                   onChange={(event) => setProductForm((current) => ({ ...current, category_id: event.target.value }))}
                 >
-                  <MenuItem value="">Select category</MenuItem>
+                  <MenuItem value="">{lang === 'vi' ? 'Chọn danh mục' : 'Select category'}</MenuItem>
                   {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
-                      {category.name_en}
+                      {lang === 'vi' ? category.name_vi : category.name_en}
                     </MenuItem>
                   ))}
                 </Select>
@@ -1246,7 +1253,9 @@ export function AdminPage() {
                 >
                   {productTypeOptions.map((item) => (
                     <MenuItem key={item.value} value={item.value}>
-                      {item.label}
+                      {lang === 'vi'
+                        ? ({ raw: 'Tươi sống', cooked: 'Hấp / Chín', value_added: 'Gia công sâu' }[item.value] || item.label)
+                        : item.label}
                     </MenuItem>
                   ))}
                 </Select>
@@ -1261,7 +1270,7 @@ export function AdminPage() {
               <Grid size={{ xs: 12 }}>
                 {productForm.images.length ? <div className={styles.productImageGrid}>{productForm.images.map((image, index) => <article className={`${styles.productImageCard} ${image.is_primary ? styles.primaryImageCard : ''}`} key={`${image.image_url}-${index}`}>
                   <div className={styles.productImagePreview}><img src={image.image_url} alt={image.alt_text || `Product ${index + 1}`} /><span>#{index + 1}</span>{image.is_primary ? <b>{lang === 'vi' ? 'Ảnh chính' : 'Primary'}</b> : null}</div>
-                  <TextField size="small" label="Alt text" value={image.alt_text} onChange={(event) => updateProductImageAlt(index, event.target.value)} />
+                  <TextField size="small" label={lang === 'vi' ? 'Mô tả hình ảnh' : 'Alt text'} value={image.alt_text} onChange={(event) => updateProductImageAlt(index, event.target.value)} />
                   <div className={styles.productImageActions}><Button size="small" variant={image.is_primary ? 'contained' : 'outlined'} onClick={() => setPrimaryProductImage(index)}>{image.is_primary ? (lang === 'vi' ? 'Đang là ảnh chính' : 'Primary image') : (lang === 'vi' ? 'Chọn làm ảnh chính' : 'Set as primary')}</Button><IconButton color="error" onClick={() => removeProductImage(index)}><DeleteIcon /></IconButton></div>
                 </article>)}</div> : <Paper variant="outlined" className={styles.noProductImages}><Typography color="text.secondary">{lang === 'vi' ? 'Chưa có ảnh sản phẩm.' : 'No product images uploaded.'}</Typography></Paper>}
               </Grid>
@@ -1270,7 +1279,7 @@ export function AdminPage() {
               <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '03 · Hiển thị và sắp xếp' : '03 · Display settings'}</Typography></Grid>
               <Grid size={{ xs: 12, md: 4 }}>
                 <TextField
-                  label="Sort order"
+                  label={lang === 'vi' ? 'Thứ tự hiển thị' : 'Sort order'}
                   type="number"
                   value={productForm.sort_order}
                   onChange={(event) => setProductForm((current) => ({ ...current, sort_order: event.target.value }))}
@@ -1285,8 +1294,8 @@ export function AdminPage() {
                     setProductForm((current) => ({ ...current, is_featured: event.target.value === 'true' }))
                   }
                 >
-                  <MenuItem value="true">Featured</MenuItem>
-                  <MenuItem value="false">Normal</MenuItem>
+                  <MenuItem value="true">{lang === 'vi' ? 'Sản phẩm nổi bật' : 'Featured'}</MenuItem>
+                  <MenuItem value="false">{lang === 'vi' ? 'Sản phẩm thường' : 'Normal'}</MenuItem>
                 </Select>
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
@@ -1297,14 +1306,14 @@ export function AdminPage() {
                     setProductForm((current) => ({ ...current, is_active: event.target.value === 'true' }))
                   }
                 >
-                  <MenuItem value="true">Active</MenuItem>
-                  <MenuItem value="false">Inactive</MenuItem>
+                  <MenuItem value="true">{lang === 'vi' ? 'Đang hiển thị' : 'Active'}</MenuItem>
+                  <MenuItem value="false">{lang === 'vi' ? 'Đang ẩn' : 'Inactive'}</MenuItem>
                 </Select>
               </Grid>
               <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '04 · Nội dung mô tả' : '04 · Product content'}</Typography></Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
-                  label="Short description EN"
+                  label={lang === 'vi' ? 'Mô tả ngắn tiếng Anh' : 'Short description EN'}
                   value={productForm.short_desc_en}
                   onChange={(event) => setProductForm((current) => ({ ...current, short_desc_en: event.target.value }))}
                   fullWidth
@@ -1314,32 +1323,12 @@ export function AdminPage() {
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
-                  label="Short description VI"
+                  label={lang === 'vi' ? 'Mô tả ngắn tiếng Việt' : 'Short description VI'}
                   value={productForm.short_desc_vi}
                   onChange={(event) => setProductForm((current) => ({ ...current, short_desc_vi: event.target.value }))}
                   fullWidth
                   multiline
                   minRows={2}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  label="Description EN"
-                  value={productForm.description_en}
-                  onChange={(event) => setProductForm((current) => ({ ...current, description_en: event.target.value }))}
-                  fullWidth
-                  multiline
-                  minRows={3}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  label="Description VI"
-                  value={productForm.description_vi}
-                  onChange={(event) => setProductForm((current) => ({ ...current, description_vi: event.target.value }))}
-                  fullWidth
-                  multiline
-                  minRows={3}
                 />
               </Grid>
               <Grid size={{ xs: 12 }}><Typography className={styles.formSectionTitle}>{lang === 'vi' ? '05 · Thông số kỹ thuật' : '05 · Technical specifications'}</Typography></Grid>
@@ -1362,13 +1351,13 @@ export function AdminPage() {
           </Stack>
         </DialogContent>
         <DialogActions className={styles.productDialogActions}>
-          <Button onClick={() => setProductDialogOpen(false)} disabled={productUpload.loading || productSaving}>Cancel</Button>
+          <Button onClick={() => setProductDialogOpen(false)} disabled={productUpload.loading || productSaving}>{lang === 'vi' ? 'Hủy' : 'Cancel'}</Button>
           <Button
             variant="contained"
             onClick={saveProduct}
             disabled={productUpload.loading || productSaving || !productForm.images.length}
           >
-            {productSaving ? 'Saving...' : 'Save'}
+            {productSaving ? (lang === 'vi' ? 'Đang lưu...' : 'Saving...') : (lang === 'vi' ? 'Lưu sản phẩm' : 'Save')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1381,7 +1370,7 @@ export function AdminPage() {
           ) : selectedInquiry ? (
             <Stack spacing={2} sx={{ mt: 1 }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Paper variant="outlined" sx={{ p: 2 }}>
                     <Typography fontWeight={700}>{selectedInquiry.full_name}</Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -1391,7 +1380,7 @@ export function AdminPage() {
                     <Typography variant="body2">{selectedInquiry.country}</Typography>
                   </Paper>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Paper variant="outlined" sx={{ p: 2 }}>
                     <Stack spacing={1.5}>
                       <Typography variant="body2">Code: {selectedInquiry.inquiry_code}</Typography>
@@ -1465,8 +1454,8 @@ export function AdminPage() {
                       </Typography>
                       {selectedInquiry.attachment_url ? (
                         <Box sx={{ mt: 1.2 }}>
-                          <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" gap={1.5} sx={{ p: 1.5, bgcolor: 'rgba(201,164,92,.09)', border: '1px solid rgba(201,164,92,.35)' }}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
+                          <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5} sx={{ alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between', p: 1.5, bgcolor: 'rgba(201,164,92,.09)', border: '1px solid rgba(201,164,92,.35)' }}>
+                            <Stack direction="row" spacing={1.2} sx={{ alignItems: 'center' }}>
                               <AttachFileRoundedIcon color="secondary" />
                               <Box>
                                 <Typography variant="body2" fontWeight={700}>{selectedInquiry.attachment_url.split('/').pop()}</Typography>
