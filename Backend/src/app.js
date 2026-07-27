@@ -83,10 +83,15 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
 
-    // Sync models (chỉ ở development, production nên dùng migrations)
+    // Sync models
     if (process.env.NODE_ENV === 'development') {
+      // Development: alter = cập nhật schema nếu có thay đổi
       await sequelize.sync({ alter: true });
-      console.log('✅ Database synced');
+      console.log('✅ Database synced (alter)');
+    } else {
+      // Production: chỉ tạo bảng nếu chưa tồn tại, không xóa dữ liệu
+      await sequelize.sync({ force: false });
+      console.log('✅ Database synced (production)');
     }
 
     app.listen(PORT, () => {

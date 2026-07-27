@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log*
+.env
+.env.*
+!.env.example
+uploads
+*.md
+generate_word_doc.py
+*.docx
+*.xlsx
+implementation_plan.md
+FRONTEND_INTEGRATION_PLAN.md

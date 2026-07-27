@@ -1,0 +1,8 @@
+# ── Secrets - KHÔNG BAO GIỜ commit lên Git ──────────────────
+.env.prod
+.env.production
+*.secret
+
+# ── OS Files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
