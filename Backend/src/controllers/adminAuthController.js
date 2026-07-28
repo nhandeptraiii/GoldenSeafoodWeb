@@ -104,8 +104,62 @@ const getMe = async (req, res, next) => {
   }
 };
 
+const validateChangePassword = [
+  body('old_password')
+    .notEmpty()
+    .withMessage('Old password is required'),
+  body('new_password')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters long'),
+];
+
+/**
+ * @route POST /api/admin/change-password
+ * @desc Change admin password
+ * @access Private/Admin
+ */
+const changePassword = async (req, res, next) => {
+  try {
+    const { old_password, new_password } = req.body;
+    
+    // Lấy thông tin user hiện tại (đã được middleware auth gán vào req.user)
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    // Kiểm tra mật khẩu cũ
+    const isMatch = await bcrypt.compare(old_password, user.password_hash);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Incorrect old password.',
+      });
+    }
+
+    // Mã hóa mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const new_password_hash = await bcrypt.hash(new_password, salt);
+
+    // Cập nhật vào DB
+    await user.update({ password_hash: new_password_hash });
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateLogin,
   login,
   getMe,
+  validateChangePassword,
+  changePassword,
 };

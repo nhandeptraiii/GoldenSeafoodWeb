@@ -23,6 +23,12 @@ router.use(authenticateAdmin);
 
 // Profile
 router.get('/me', adminAuthController.getMe);
+router.post(
+  '/change-password',
+  adminAuthController.validateChangePassword,
+  validate,
+  adminAuthController.changePassword
+);
 
 // Categories Management
 router.get('/categories', adminCategoryController.getAllAdminCategories);
