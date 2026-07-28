@@ -80,6 +80,6 @@ export function ContactPage() {
       </form>
     </section>
 
-    <section className={styles.office}><div className={styles.officeInfo}><p>{text.officeEyebrow}</p><h2>{text.officeTitle}</h2><div><LocationOnOutlinedIcon /><span>{text.address}</span></div><a href="https://www.google.com/maps/search/?api=1&query=360+Tran+Hung+Dao+Phu+Loi+Can+Tho+Vietnam" target="_blank" rel="noreferrer">Google Maps</a></div><div className={styles.map}><iframe title={text.mapTitle} loading="lazy" referrerPolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=360%20Tran%20Hung%20Dao%20Phu%20Loi%20Can%20Tho%20Vietnam&output=embed" /></div></section>
+    <section className={styles.office}><div className={styles.officeInfo}><p>{text.officeEyebrow}</p><h2>{text.officeTitle}</h2><div><LocationOnOutlinedIcon /><span>{text.address}</span></div><a href="https://maps.app.goo.gl/nhV3Y7vtNb8k2Jiz9" target="_blank" rel="noreferrer">Google Maps</a></div><div className={styles.map}><iframe title={text.mapTitle} loading="lazy" referrerPolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=360%20Tran%20Hung%20Dao%20Phu%20Loi%20Can%20Tho%20Vietnam&output=embed" /><a className={styles.mapLink} href="https://maps.app.goo.gl/nhV3Y7vtNb8k2Jiz9" target="_blank" rel="noreferrer" aria-label={lang === 'vi' ? 'Mở địa chỉ công ty trên Google Maps' : 'Open the company address in Google Maps'} /></div></section>
   </main>
 }
