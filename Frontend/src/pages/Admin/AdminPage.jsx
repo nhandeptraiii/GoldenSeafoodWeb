@@ -104,22 +104,32 @@ const defaultInquiryFilters = {
 }
 
 const statusOptions = [
-  { value: 'new', label: 'New' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'quoted', label: 'Quoted' },
-  { value: 'closed', label: 'Closed' },
+  { value: 'new', en: 'New', vi: 'Mới' },
+  { value: 'processing', en: 'Processing', vi: 'Đang xử lý' },
+  { value: 'quoted', en: 'Quoted', vi: 'Đã báo giá' },
+  { value: 'closed', en: 'Closed', vi: 'Đã đóng' },
 ]
 
 const sourceOptions = [
-  { value: 'contact_form', label: 'Contact form' },
-  { value: 'inquiry_basket', label: 'Inquiry basket' },
+  { value: 'contact_form', en: 'Contact form', vi: 'Biểu mẫu liên hệ' },
+  { value: 'inquiry_basket', en: 'Inquiry basket', vi: 'Danh sách báo giá' },
 ]
 
 const productTypeOptions = [
-  { value: 'raw', label: 'Raw' },
-  { value: 'cooked', label: 'Cooked' },
-  { value: 'value_added', label: 'Value added' },
+  { value: 'raw', en: 'Raw', vi: 'Tươi sống' },
+  { value: 'cooked', en: 'Cooked', vi: 'Hấp / Chín' },
+  { value: 'value_added', en: 'Value added', vi: 'Gia công sâu' },
 ]
+
+function getOptionLabel(options, value, lang) {
+  const option = options.find((item) => item.value === value)
+  return option?.[lang] || option?.en || value || '-'
+}
+
+function getCategoryName(category, lang) {
+  if (!category) return '-'
+  return (lang === 'vi' ? category.name_vi : category.name_en) || category.name_en || category.name_vi || '-'
+}
 
 function formatDate(value) {
   if (!value) {
@@ -138,6 +148,31 @@ function normalizeSpecifications(specifications) {
     spec_key_vi: item.spec_key_vi || '',
     spec_value: item.spec_value || '',
     sort_order: index + 1,
+  }))
+}
+
+function isPrimaryImage(value) {
+  return value === true || value === 1 || value === '1'
+}
+
+function normalizeProductImages(images, fallbackAlt = '') {
+  if (!Array.isArray(images)) return []
+
+  const validImages = images.filter((image) => image?.image_url)
+  if (!validImages.length) return []
+
+  const selectedPrimaryIndex = validImages.findIndex((image) => isPrimaryImage(image.is_primary))
+  const primaryIndex = selectedPrimaryIndex >= 0 ? selectedPrimaryIndex : 0
+  const orderedImages = [
+    validImages[primaryIndex],
+    ...validImages.filter((_, index) => index !== primaryIndex),
+  ]
+
+  return orderedImages.map((image, index) => ({
+    image_url: image.image_url,
+    alt_text: image.alt_text || fallbackAlt,
+    is_primary: index === 0,
+    sort_order: index,
   }))
 }
 
@@ -551,7 +586,7 @@ export function AdminPage() {
         short_desc_vi: detail.short_desc_vi || '',
         description_en: detail.description_en || '',
         description_vi: detail.description_vi || '',
-        images: (detail.images || []).map((item, index) => ({ image_url: item.image_url, alt_text: item.alt_text || '', is_primary: Boolean(item.is_primary) || (!detail.images?.some((image) => image.is_primary) && index === 0) })),
+        images: normalizeProductImages(detail.images, detail.name_en || ''),
         product_type: detail.product_type || 'raw',
         is_featured: Boolean(detail.is_featured),
         is_active: Boolean(detail.is_active),
@@ -588,7 +623,7 @@ export function AdminPage() {
         ...productForm,
         category_id: Number(productForm.category_id),
         sort_order: Number(productForm.sort_order || 0),
-        images: productForm.images.map((image, index) => ({ image_url: image.image_url, alt_text: image.alt_text || productForm.name_en, is_primary: image.is_primary, sort_order: index })),
+        images: normalizeProductImages(productForm.images, productForm.name_en),
         specifications: normalizeSpecifications(productForm.specifications),
       }
 
@@ -636,7 +671,20 @@ export function AdminPage() {
   }
 
   const setPrimaryProductImage = (index) => {
-    setProductForm((current) => ({ ...current, images: current.images.map((image, imageIndex) => ({ ...image, is_primary: imageIndex === index })) }))
+    setProductForm((current) => {
+      const selectedImage = current.images[index]
+      if (!selectedImage) return current
+
+      return {
+        ...current,
+        images: normalizeProductImages([
+          { ...selectedImage, is_primary: true },
+          ...current.images
+            .filter((_, imageIndex) => imageIndex !== index)
+            .map((image) => ({ ...image, is_primary: false })),
+        ], current.name_en),
+      }
+    })
   }
 
   const updateProductImageAlt = (index, value) => {
@@ -645,9 +693,8 @@ export function AdminPage() {
 
   const removeProductImage = (index) => {
     setProductForm((current) => {
-      const removedPrimary = current.images[index]?.is_primary
       const images = current.images.filter((_, imageIndex) => imageIndex !== index)
-      return { ...current, images: removedPrimary && images.length ? images.map((image, imageIndex) => ({ ...image, is_primary: imageIndex === 0 })) : images }
+      return { ...current, images: normalizeProductImages(images, current.name_en) }
     })
   }
 
@@ -809,14 +856,14 @@ export function AdminPage() {
                     <Grid key={category.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
                       <Paper sx={{ p: 2.5, borderRadius: 3 }}>
                         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                          {category.name_en}
+                          {getCategoryName(category, lang)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {category.name_vi}
+                          {lang === 'vi' ? category.name_en : category.name_vi}
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
                           <Chip size="small" label={category.slug} />
-                          <Chip size="small" label={`${category.productCount || 0} products`} />
+                          <Chip size="small" label={`${category.productCount || 0} ${lang === 'vi' ? 'sản phẩm' : 'products'}`} />
                         </Stack>
                       </Paper>
                     </Grid>
@@ -865,7 +912,7 @@ export function AdminPage() {
                             <Chip
                               size="small"
                               color={category.is_active ? 'success' : 'default'}
-                              label={category.is_active ? 'Active' : 'Inactive'}
+                              label={category.is_active ? (lang === 'vi' ? 'Hoạt động' : 'Active') : (lang === 'vi' ? 'Ngừng hoạt động' : 'Inactive')}
                             />
                           </TableCell>
                           <TableCell align="right">
@@ -928,7 +975,7 @@ export function AdminPage() {
                       <MenuItem value="">{lang === 'vi' ? 'Tất cả danh mục' : 'All categories'}</MenuItem>
                       {categories.map((category) => (
                         <MenuItem key={category.id} value={category.id}>
-                          {category.name_en}
+                          {getCategoryName(category, lang)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -946,7 +993,7 @@ export function AdminPage() {
                       <MenuItem value="">{lang === 'vi' ? 'Tất cả loại' : 'All types'}</MenuItem>
                       {productTypeOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
-                          {item.label}
+                          {getOptionLabel(productTypeOptions, item.value, lang)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -985,14 +1032,14 @@ export function AdminPage() {
                               </Typography>
                             </Stack>
                           </TableCell>
-                          <TableCell>{product.category?.name_en || categoryMap[String(product.category_id)]?.name_en || '-'}</TableCell>
+                          <TableCell>{getCategoryName(product.category || categoryMap[String(product.category_id)], lang)}</TableCell>
                           <TableCell>
-                            <Chip size="small" label={product.product_type} />
+                            <Chip size="small" label={getOptionLabel(productTypeOptions, product.product_type, lang)} />
                           </TableCell>
                           <TableCell>
                             <Stack direction="row" spacing={1}>
-                              <Chip size="small" color={product.is_featured ? 'secondary' : 'default'} label={product.is_featured ? 'Featured' : 'Normal'} />
-                              <Chip size="small" color={product.is_active ? 'success' : 'default'} label={product.is_active ? 'Active' : 'Inactive'} />
+                              <Chip size="small" color={product.is_featured ? 'secondary' : 'default'} label={product.is_featured ? (lang === 'vi' ? 'Nổi bật' : 'Featured') : (lang === 'vi' ? 'Thông thường' : 'Normal')} />
+                              <Chip size="small" color={product.is_active ? 'success' : 'default'} label={product.is_active ? (lang === 'vi' ? 'Đang hiển thị' : 'Active') : (lang === 'vi' ? 'Đang ẩn' : 'Inactive')} />
                             </Stack>
                           </TableCell>
                           <TableCell>{product.slug}</TableCell>
@@ -1054,7 +1101,7 @@ export function AdminPage() {
                       <MenuItem value="">{lang === 'vi' ? 'Tất cả trạng thái' : 'All statuses'}</MenuItem>
                       {statusOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
-                          {item.label}
+                          {getOptionLabel(statusOptions, item.value, lang)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -1072,7 +1119,7 @@ export function AdminPage() {
                       <MenuItem value="">{lang === 'vi' ? 'Tất cả nguồn' : 'All sources'}</MenuItem>
                       {sourceOptions.map((item) => (
                         <MenuItem key={item.value} value={item.value}>
-                          {item.label}
+                          {getOptionLabel(sourceOptions, item.value, lang)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -1115,9 +1162,9 @@ export function AdminPage() {
                           </TableCell>
                           <TableCell>{inquiry.company_name}</TableCell>
                           <TableCell>
-                            <Chip size="small" color={getStatusColor(inquiry.status)} label={inquiry.status} />
+                            <Chip size="small" color={getStatusColor(inquiry.status)} label={getOptionLabel(statusOptions, inquiry.status, lang)} />
                           </TableCell>
-                          <TableCell>{inquiry.source}</TableCell>
+                          <TableCell>{getOptionLabel(sourceOptions, inquiry.source, lang)}</TableCell>
                           <TableCell>{formatDate(inquiry.created_at)}</TableCell>
                           <TableCell align="right">
                             <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
@@ -1192,8 +1239,8 @@ export function AdminPage() {
               }
               fullWidth
             >
-              <MenuItem value="true">Active</MenuItem>
-              <MenuItem value="false">Inactive</MenuItem>
+              <MenuItem value="true">{lang === 'vi' ? 'Hoạt động' : 'Active'}</MenuItem>
+              <MenuItem value="false">{lang === 'vi' ? 'Ngừng hoạt động' : 'Inactive'}</MenuItem>
             </Select>
           </Stack>
         </DialogContent>
@@ -1253,9 +1300,7 @@ export function AdminPage() {
                 >
                   {productTypeOptions.map((item) => (
                     <MenuItem key={item.value} value={item.value}>
-                      {lang === 'vi'
-                        ? ({ raw: 'Tươi sống', cooked: 'Hấp / Chín', value_added: 'Gia công sâu' }[item.value] || item.label)
-                        : item.label}
+                      {getOptionLabel(productTypeOptions, item.value, lang)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -1383,8 +1428,8 @@ export function AdminPage() {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Paper variant="outlined" sx={{ p: 2 }}>
                     <Stack spacing={1.5}>
-                      <Typography variant="body2">Code: {selectedInquiry.inquiry_code}</Typography>
-                      <Typography variant="body2">Source: {selectedInquiry.source}</Typography>
+                      <Typography variant="body2">{lang === 'vi' ? 'Mã' : 'Code'}: {selectedInquiry.inquiry_code}</Typography>
+                      <Typography variant="body2">{lang === 'vi' ? 'Nguồn' : 'Source'}: {getOptionLabel(sourceOptions, selectedInquiry.source, lang)}</Typography>
                       <Select
                         value={selectedInquiry.status}
                         onChange={(event) => saveInquiryStatus(event.target.value)}
@@ -1392,7 +1437,7 @@ export function AdminPage() {
                       >
                         {statusOptions.map((item) => (
                           <MenuItem key={item.value} value={item.value}>
-                            {item.label}
+                            {getOptionLabel(statusOptions, item.value, lang)}
                           </MenuItem>
                         ))}
                       </Select>
