@@ -12,6 +12,7 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  InputAdornment,
   MenuItem,
   Paper,
   Pagination,
@@ -33,6 +34,9 @@ import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import LogoutIcon from '@mui/icons-material/Logout'
+import LockResetRoundedIcon from '@mui/icons-material/LockResetRounded'
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded'
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded'
 import UploadIcon from '@mui/icons-material/Upload'
 import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded'
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded'
@@ -44,6 +48,7 @@ import logo from '../../assets/logo.png'
 import styles from './AdminPage.module.scss'
 import {
   adminLogin,
+  changeAdminPassword,
   clearAdminSession,
   deleteAdminInquiry,
   getAdminInquiryById,
@@ -229,6 +234,7 @@ function showAdminFormError(error, lang) {
 
 function AdminLoginCard({ form, onChange, onSubmit, loading, error, lang, onToggleLanguage }) {
   const text = adminCopy[lang]
+  const [showPassword, setShowPassword] = useState(false)
   return (
     <Box className={styles.loginPage}>
       <Box className={styles.loginVisual}>
@@ -261,9 +267,25 @@ function AdminLoginCard({ form, onChange, onSubmit, loading, error, lang, onTogg
           />
           <TextField
             label={text.password}
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={form.password}
             onChange={(event) => onChange('password', event.target.value)}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPassword ? (lang === 'vi' ? 'Ẩn mật khẩu' : 'Hide password') : (lang === 'vi' ? 'Hiện mật khẩu' : 'Show password')}
+                      edge="end"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => setShowPassword((current) => !current)}
+                    >
+                      {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
             fullWidth
           />
           <Button type="submit" variant="contained" size="large" disabled={loading}>
@@ -314,6 +336,10 @@ export function AdminPage() {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' })
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({ old_password: '', new_password: '', confirm_password: '' })
+  const [passwordVisibility, setPasswordVisibility] = useState({ old_password: false, new_password: false, confirm_password: false })
+  const [passwordSaving, setPasswordSaving] = useState(false)
 
   useEffect(() => {
     document.title = `${lang === 'vi' ? 'Quản trị' : 'Administration'} | Golden Seafood`
@@ -473,6 +499,55 @@ export function AdminPage() {
     setCategories([])
     setProducts([])
     setInquiries([])
+  }
+
+  const openPasswordDialog = () => {
+    setPasswordForm({ old_password: '', new_password: '', confirm_password: '' })
+    setPasswordVisibility({ old_password: false, new_password: false, confirm_password: false })
+    setPasswordDialogOpen(true)
+  }
+
+  const passwordAdornment = (field) => (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label={passwordVisibility[field] ? (lang === 'vi' ? 'Ẩn mật khẩu' : 'Hide password') : (lang === 'vi' ? 'Hiện mật khẩu' : 'Show password')}
+        edge="end"
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => setPasswordVisibility((current) => ({ ...current, [field]: !current[field] }))}
+      >
+        {passwordVisibility[field] ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
+      </IconButton>
+    </InputAdornment>
+  )
+
+  const savePassword = async () => {
+    if (!passwordForm.old_password || !passwordForm.new_password || !passwordForm.confirm_password) {
+      toast.error(lang === 'vi' ? 'Vui lòng nhập đầy đủ thông tin mật khẩu.' : 'Please complete all password fields.')
+      return
+    }
+    if (passwordForm.new_password.length < 6) {
+      toast.error(lang === 'vi' ? 'Mật khẩu mới phải có ít nhất 6 ký tự.' : 'The new password must contain at least 6 characters.')
+      return
+    }
+    if (passwordForm.new_password !== passwordForm.confirm_password) {
+      toast.error(lang === 'vi' ? 'Mật khẩu xác nhận không khớp.' : 'The password confirmation does not match.')
+      return
+    }
+
+    setPasswordSaving(true)
+    try {
+      await changeAdminPassword({
+        old_password: passwordForm.old_password,
+        new_password: passwordForm.new_password,
+      })
+      toast.success(lang === 'vi' ? 'Đổi mật khẩu thành công.' : 'Password changed successfully.')
+      setPasswordDialogOpen(false)
+      setPasswordForm({ old_password: '', new_password: '', confirm_password: '' })
+    } catch (error) {
+      showAdminFormError(error, lang)
+    } finally {
+      setPasswordSaving(false)
+    }
   }
 
   const openCategoryDialog = (category = null) => {
@@ -816,7 +891,11 @@ export function AdminPage() {
             </Typography>
             </Box>
           </Box>
-          <Box className={styles.adminActions}><Button variant="outlined" onClick={() => dispatch(toggleLanguage())}>{text.language}</Button><Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}>{text.logout}</Button></Box>
+          <Box className={styles.adminActions}>
+            <Button variant="outlined" onClick={() => dispatch(toggleLanguage())}>{text.language}</Button>
+            <Button variant="outlined" startIcon={<LockResetRoundedIcon />} onClick={openPasswordDialog}>{lang === 'vi' ? 'Đổi mật khẩu' : 'Change password'}</Button>
+            <Button variant="outlined" startIcon={<LogoutIcon />} onClick={handleLogout}>{text.logout}</Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -1194,6 +1273,51 @@ export function AdminPage() {
           </Box>
         </Paper>
       </Container>
+
+      <Dialog open={passwordDialogOpen} onClose={() => !passwordSaving && setPasswordDialogOpen(false)} fullWidth maxWidth="xs">
+        <DialogTitle>{lang === 'vi' ? 'Đổi mật khẩu quản trị' : 'Change admin password'}</DialogTitle>
+        <DialogContent sx={{ pt: 1.5 }}>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField
+              type={passwordVisibility.old_password ? 'text' : 'password'}
+              label={lang === 'vi' ? 'Mật khẩu hiện tại' : 'Current password'}
+              value={passwordForm.old_password}
+              onChange={(event) => setPasswordForm((current) => ({ ...current, old_password: event.target.value }))}
+              autoComplete="current-password"
+              slotProps={{ input: { endAdornment: passwordAdornment('old_password') } }}
+              fullWidth
+            />
+            <TextField
+              type={passwordVisibility.new_password ? 'text' : 'password'}
+              label={lang === 'vi' ? 'Mật khẩu mới' : 'New password'}
+              value={passwordForm.new_password}
+              onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))}
+              helperText={lang === 'vi' ? 'Tối thiểu 6 ký tự' : 'At least 6 characters'}
+              autoComplete="new-password"
+              slotProps={{ input: { endAdornment: passwordAdornment('new_password') } }}
+              fullWidth
+            />
+            <TextField
+              type={passwordVisibility.confirm_password ? 'text' : 'password'}
+              label={lang === 'vi' ? 'Xác nhận mật khẩu mới' : 'Confirm new password'}
+              value={passwordForm.confirm_password}
+              onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))}
+              autoComplete="new-password"
+              slotProps={{ input: { endAdornment: passwordAdornment('confirm_password') } }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !passwordSaving) savePassword()
+              }}
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPasswordDialogOpen(false)} disabled={passwordSaving}>{lang === 'vi' ? 'Hủy' : 'Cancel'}</Button>
+          <Button variant="contained" onClick={savePassword} disabled={passwordSaving}>
+            {passwordSaving ? <CircularProgress size={20} color="inherit" /> : (lang === 'vi' ? 'Đổi mật khẩu' : 'Change password')}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={categoryDialogOpen} onClose={() => !categoryUpload.loading && setCategoryDialogOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>{categoryForm.id ? 'Edit category' : 'New category'}</DialogTitle>
