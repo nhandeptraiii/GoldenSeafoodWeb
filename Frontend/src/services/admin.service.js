@@ -45,6 +45,11 @@ export async function getAdminProfile() {
   return response.data?.data
 }
 
+export async function changeAdminPassword(payload) {
+  const response = await axiosClient.post('/admin/change-password', payload)
+  return response.data
+}
+
 export async function getAdminInquiries(params = {}) {
   const response = await axiosClient.get('/admin/inquiries', { params })
   return response.data?.data || { inquiries: [], pagination: null }
