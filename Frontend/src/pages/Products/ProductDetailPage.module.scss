@@ -36,7 +36,7 @@
 .specRow p { margin: 0; color: #344b5d; font-size: .84rem; line-height: 1.5; }
 .mixedBanner { margin-top: 100px; padding: 46px 52px; display: flex; justify-content: space-between; align-items: center; gap: 50px; background: var(--gs-primary); color: #fff; }
 .mixedBanner p { margin: 0 0 12px; color: var(--gs-secondary); font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-.mixedBanner h2 { max-width: 780px; margin: 0; font-size: clamp(1.15rem,2vw,1.5rem); line-height: 1.55; font-weight: 500; }
+.mixedBanner h2 { max-width: 780px; margin: 0; color: #fff; font-size: clamp(1.15rem,2vw,1.5rem); line-height: 1.55; font-weight: 500; }
 .mixedBanner a { min-width: max-content; display: inline-flex; align-items: center; gap: 8px; padding: 15px 20px; background: var(--gs-secondary); color: var(--gs-primary-deep); font-size: .74rem; font-weight: 800; text-transform: uppercase; }
 @media (max-width: 900px) { .container, .loading { width: min(100% - 40px,720px); } .productLayout { grid-template-columns: 1fr; } .gallery { position: static; } .mixedBanner { padding: 38px; flex-direction: column; align-items: flex-start; gap: 26px; } }
 @media (max-width: 600px) { .page { padding: 32px 0 74px; } .container, .loading { width: calc(100% - 32px); } .mainImage span { display: none; } .mainImage:hover img { transform: none; } .specRow { grid-template-columns: 1fr; gap: 7px; } .mixedBanner { margin-top: 70px; padding: 28px 24px; } .mixedBanner a { width: 100%; min-width: 0; justify-content: center; } }
