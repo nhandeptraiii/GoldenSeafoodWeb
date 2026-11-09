@@ -1,4 +1,4 @@
-.page { background: #fff; }
+﻿.page { background: #fff; }
 .container { width: min(1320px,calc(100% - 64px)); margin: auto; }
 .hero { position: relative; min-height: 640px; padding: 100px 32px; display: grid; place-items: center; overflow: hidden; isolation: isolate; background: var(--hero-image) center / cover no-repeat; border-bottom: 3px solid var(--gs-secondary); }
 .hero::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg,rgba(6,28,46,.85),rgba(11,41,66,.7),rgba(6,28,46,.82)); }
@@ -26,3 +26,7 @@
 @media (max-width: 1050px) { .container { width: min(100% - 40px,800px); }.stepGrid { grid-template-columns: repeat(2,1fr); gap: 20px; }.stepGrid::before { display: none; } }
 @media (max-width: 620px) { .hero { min-height: 530px; padding: 75px 24px; background-position: 58% center; }.hero::after { inset: 12px; }.hero h1 { font-size: clamp(2.8rem,13vw,4.1rem); }.heroContent > span { font-size: .92rem; line-height: 1.7; }.scrollMark { display: none; }.certifications,.pipeline { padding: 85px 0; }.certIntro { margin-bottom: 45px; }.logoSlider { width: calc(100% - 24px); grid-template-columns: minmax(0,1fr); }.logoSlider > button { display: none; }.logoItem { width: 154px; height: 112px; }.container { width: calc(100% - 32px); }.sectionHeading { margin-bottom: 48px; }.stepGrid { grid-template-columns: 1fr; }.stepImage { aspect-ratio: 1.5 / 1; }.stepBody h3 { min-height: 0; } }
 @media (prefers-reduced-motion: reduce) { .scrollMark i { animation: none; }.logoViewport { scroll-behavior: auto; } }
+
+.hero{min-height:470px;border:0}.hero:after{display:none}.heroContent{max-width:720px;text-align:left}.heroContent>p{margin-left:0}.hero h1{font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1.18;letter-spacing:-.02em;font-weight:750}.certifications,.pipeline{padding-top:96px;padding-bottom:96px}
+
+.hero{min-height:46vh;padding:70px 24px;background-position:center;background-size:cover}.heroContent{width:min(1220px,100%);margin:auto;max-width:720px;text-align:left}.heroContent>p{margin-left:0}.hero h1{font-size:clamp(2.1rem,4.4vw,3.4rem);line-height:1.2;letter-spacing:-.01em;font-weight:700}.heroContent>span{max-width:560px}.hero:after{display:none}.certifications,.pipeline{padding:96px 0}.certIntro h2,.sectionHeading h2{font-size:clamp(1.7rem,3vw,2.35rem);letter-spacing:-.01em}@media(max-width:600px){.hero{min-height:390px;padding:60px 20px}.certifications,.pipeline{padding:64px 0}}

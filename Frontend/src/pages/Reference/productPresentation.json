@@ -1,0 +1,272 @@
+{
+  "shrimp-raw-pd": {
+    "image": "/reference-assets/img/products/shrimp-raw-pd.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Raw PD Vannamei Shrimp"
+  },
+  "shrimp-raw-pto": {
+    "image": "/reference-assets/img/products/shrimp-raw-pto.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Raw PTO Vannamei Shrimp"
+  },
+  "shrimp-cooked-pd": {
+    "image": "/reference-assets/img/products/shrimp-cooked-pd.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Cooked PD Vannamei Shrimp"
+  },
+  "shrimp-cooked-pto": {
+    "image": "/reference-assets/img/products/shrimp-cooked-pto.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Cooked PTO Vannamei Shrimp"
+  },
+  "shrimp-nobashi": {
+    "image": "/reference-assets/img/products/shrimp-nobashi.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Nobashi Vannamei Shrimp"
+  },
+  "shrimp-skewer": {
+    "image": "/reference-assets/img/products/shrimp-skewer.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Skewer Vannamei Shrimp"
+  },
+  "shrimp-sushi": {
+    "image": "/reference-assets/img/products/shrimp-sushi.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Sushi Vannamei Shrimp"
+  },
+  "shrimp-torpedo": {
+    "image": "/reference-assets/img/products/shrimp-torpedo.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Torpedo Shrimp"
+  },
+  "shrimp-coconut-butterfly": {
+    "image": "/reference-assets/img/products/shrimp-coconut-butterfly.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Breaded Coconut Butterfly Shrimp"
+  },
+  "shrimp-crispy-bubble": {
+    "image": "/reference-assets/img/products/shrimp-crispy-bubble.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Crispy Bubble Shrimp"
+  },
+  "shrimp-donuts": {
+    "image": "/reference-assets/img/products/shrimp-donuts.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Donuts Shrimp"
+  },
+  "shrimp-lychee-ball": {
+    "image": "/reference-assets/img/products/shrimp-lychee-ball.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Lychee Shrimp Ball"
+  },
+  "shrimp-volcano-cheese": {
+    "image": "/reference-assets/img/products/shrimp-volcano-cheese.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Volcano Cheese Shrimp"
+  },
+  "shrimp-popcorn": {
+    "image": "/reference-assets/img/products/shrimp-popcorn.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Popcorn Shrimp"
+  },
+  "shrimp-ball": {
+    "image": "/reference-assets/img/products/shrimp-ball.jpg",
+    "scientific": "Litopenaeus vannamei",
+    "name": "Shrimp Ball"
+  },
+  "marine-tuna-loin": {
+    "image": "/reference-assets/img/products/tuna-loin.jpg",
+    "scientific": "Thunnus albacares",
+    "name": "Yellowfin Tuna Loin"
+  },
+  "marine-tuna-saku": {
+    "image": "/reference-assets/img/products/tuna-saku.jpg",
+    "scientific": "Thunnus albacares",
+    "name": "Yellowfin Tuna Saku"
+  },
+  "marine-tuna-steak": {
+    "image": "/reference-assets/img/products/tuna-steak.jpg",
+    "scientific": "Thunnus albacares",
+    "name": "Yellowfin Tuna Steak"
+  },
+  "marine-tuna-cube": {
+    "image": "/reference-assets/img/products/tuna-cube.jpg",
+    "scientific": "Thunnus albacares",
+    "name": "Yellowfin Tuna Cube"
+  },
+  "marine-mahi-fillet": {
+    "image": "/reference-assets/img/products/mahi-fillet.jpg",
+    "scientific": "Coryphaena hippurus",
+    "name": "Mahi Mahi Fillet"
+  },
+  "marine-mahi-portion": {
+    "image": "/reference-assets/img/products/mahi-portion.jpg",
+    "scientific": "Coryphaena hippurus",
+    "name": "Mahi Mahi Portion"
+  },
+  "marine-wahoo-portion": {
+    "image": "/reference-assets/img/products/wahoo-portion.jpg",
+    "scientific": "Acanthocybium solandri",
+    "name": "Wahoo Portion"
+  },
+  "marine-wahoo-steak": {
+    "image": "/reference-assets/img/products/wahoo-steak.jpg",
+    "scientific": "Acanthocybium solandri",
+    "name": "Wahoo Steak"
+  },
+  "marine-swordfish-portion": {
+    "image": "/reference-assets/img/products/swordfish-portion.jpg",
+    "scientific": "Xiphias gladius",
+    "name": "Swordfish Portion"
+  },
+  "marine-swordfish-cube": {
+    "image": "/reference-assets/img/products/swordfish-cube.jpg",
+    "scientific": "Xiphias gladius",
+    "name": "Swordfish Cube"
+  },
+  "marine-marlin-cube": {
+    "image": "/reference-assets/img/products/marlin-cube.jpg",
+    "scientific": "Makaira spp.",
+    "name": "Marlin Cube"
+  },
+  "marine-red-snapper-fillet": {
+    "image": "/reference-assets/img/products/red-snapper-fillet.jpg",
+    "scientific": "Lutjanus spp.",
+    "name": "Red Snapper Fillet"
+  },
+  "marine-red-mullet-fillet": {
+    "image": "/reference-assets/img/products/red-mullet-fillet.jpg",
+    "scientific": "Mullidae spp.",
+    "name": "Red Mullet Fillet"
+  },
+  "fresh-pangasius-portion": {
+    "image": "/reference-assets/img/products/pangasius-portion.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Portion"
+  },
+  "fresh-pangasius-loin": {
+    "image": "/reference-assets/img/products/pangasius-loin.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Loin"
+  },
+  "fresh-pangasius-cube": {
+    "image": "/reference-assets/img/products/pangasius-cube.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Cube"
+  },
+  "fresh-pangasius-block": {
+    "image": "/reference-assets/img/products/pangasius-block.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Block"
+  },
+  "fresh-pangasius-fold": {
+    "image": "/reference-assets/img/products/pangasius-fold-portion.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Fold Portion"
+  },
+  "fresh-pangasius-popcorn": {
+    "image": "/reference-assets/img/products/pangasius-popcorn.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Popcorn"
+  },
+  "fresh-pangasius-marinated": {
+    "image": "/reference-assets/img/products/pangasius-marinated.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Marinated Pangasius"
+  },
+  "fresh-pangasius-battered": {
+    "image": "/reference-assets/img/products/pangasius-battered.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Battered Pangasius"
+  },
+  "fresh-tilapia-fillet": {
+    "image": "/reference-assets/img/products/tilapia-fillet.jpg",
+    "scientific": "Oreochromis niloticus",
+    "name": "Tilapia Fillet"
+  },
+  "ceph-cuttlefish-whole": {
+    "image": "/reference-assets/img/products/cuttlefish-whole.jpg",
+    "scientific": "Sepia pharaonis",
+    "name": "Whole Cleaned Cuttlefish"
+  },
+  "ceph-octopus-whole": {
+    "image": "/reference-assets/img/products/octopus-whole.jpg",
+    "scientific": "Octopus membranaceus",
+    "name": "Whole Cleaned Baby Octopus"
+  },
+  "ceph-cuttlefish-pineapple": {
+    "image": "/reference-assets/img/products/cuttlefish-pineapple.jpg",
+    "scientific": "Sepia pharaonis",
+    "name": "Pineapple Cuttlefish"
+  },
+  "ceph-cuttlefish-sushi": {
+    "image": "/reference-assets/img/products/cuttlefish-sushi.jpg",
+    "scientific": "Sepia pharaonis",
+    "name": "Raw Cuttlefish Sushi"
+  },
+  "crab-scored-claw": {
+    "image": "/reference-assets/img/products/crab-scored-claw.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Snow Crab Scored Claw"
+  },
+  "crab-breaded-claw": {
+    "image": "/reference-assets/img/products/crab-breaded-claw.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Breaded Snow Crab Claw"
+  },
+  "crab-peeled-claw": {
+    "image": "/reference-assets/img/products/crab-peeled-claw.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Peeled Snow Crab Claw"
+  },
+  "crab-snow-combo": {
+    "image": "/reference-assets/img/products/crab-snow-combo.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Snow Crab Combo"
+  },
+  "crab-snow-leg-meat": {
+    "image": "/reference-assets/img/products/crab-snow-leg-meat.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Snow Crab Leg Meat"
+  },
+  "crab-snow-meat": {
+    "image": "/reference-assets/img/products/crab-snow-meat.jpg",
+    "scientific": "Chionoecetes opilio",
+    "name": "Snow Crab Meat"
+  },
+  "crab-dungness-combo": {
+    "image": "/reference-assets/img/products/crab-dungness-combo.jpg",
+    "scientific": "Metacarcinus magister",
+    "name": "Dungness Crab Combo"
+  },
+  "crab-dungness-fry-leg": {
+    "image": "/reference-assets/img/products/crab-dungness-fry-leg.jpg",
+    "scientific": "Metacarcinus magister",
+    "name": "Dungness Crab Fry Leg"
+  },
+  "crab-dungness-white-meat": {
+    "image": "/reference-assets/img/products/crab-dungness-white-meat.jpg",
+    "scientific": "Metacarcinus magister",
+    "name": "Dungness Crab White Meat"
+  },
+  "frog-yoga": {
+    "image": "/reference-assets/img/products/frog-yoga.jpg",
+    "scientific": "Rana rugulosa",
+    "name": "Yoga Frog Leg"
+  },
+  "frog-classic": {
+    "image": "/reference-assets/img/products/frog-classic.jpg",
+    "scientific": "Rana rugulosa",
+    "name": "Classic Frog Leg"
+  },
+  "frog-battered": {
+    "image": "/reference-assets/img/products/frog-battered.jpg",
+    "scientific": "Rana rugulosa",
+    "name": "Crispy Battered Frog Leg"
+  },
+  "shell-scallop-meat": {
+    "image": "/reference-assets/img/products/scallop-meat.jpg",
+    "scientific": "Amusium pleuronectes",
+    "name": "Scallop Meat"
+  }
+}

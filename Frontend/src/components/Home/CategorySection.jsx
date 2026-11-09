@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useSelector } from 'react-redux'
 import { Skeleton } from '@mui/material'
@@ -10,10 +10,9 @@ import { CategoryCard } from './CategoryCard'
 import styles from './CategorySection.module.scss'
 
 const copy = {
-  vi: { eyebrow: 'Sản phẩm của chúng tôi', title: 'Danh Mục Sản Phẩm Cốt Lõi', subtitle: 'Nguồn thủy hải sản chất lượng cao, đầy đủ chứng chỉ, được kiểm tra nghiêm ngặt nhằm đáp ứng mọi tiêu chuẩn thị trường của bạn.', details: 'Xem chi tiết', empty: 'Chưa có danh mục sản phẩm để hiển thị.', error: 'Không thể tải danh mục lúc này. Vui lòng thử lại sau.' },
-  en: { eyebrow: 'Our products', title: 'Our Core Categories', subtitle: 'High-quality, certified seafood carefully sourced and strictly inspected to meet your market demands.', details: 'View Details', empty: 'There are no product categories to display yet.', error: 'Categories could not be loaded. Please try again later.' },
+  vi: { eyebrow: 'Sản phẩm cung ứng', title: 'Danh Mục Sản Phẩm Cốt Lõi', subtitle: 'Nguồn thủy hải sản chất lượng cao, đầy đủ chứng chỉ, được kiểm tra nghiêm ngặt nhằm đáp ứng mọi tiêu chuẩn thị trường của bạn.', details: 'Xem chi tiết', empty: 'Chưa có danh mục sản phẩm để hiển thị.', error: 'Không thể tải danh mục lúc này. Vui lòng thử lại sau.' },
+  en: { eyebrow: 'What We Supply', title: 'Our Core Categories', subtitle: 'High-quality, certified seafood carefully sourced and strictly inspected to meet your market demands.', details: 'View Details', empty: 'There are no product categories to display yet.', error: 'Categories could not be loaded. Please try again later.' },
 }
-
 function gridClass(count) { if (count <= 4) return styles.compact; if (count <= 6) return styles.threeColumns; return styles.fourColumns }
 
 export function CategorySection() {
@@ -27,7 +26,7 @@ export function CategorySection() {
     load(); return () => { active = false }
   }, [])
   return (
-    <section className={styles.section} aria-labelledby="categories-title"><div className={styles.inner}>
+    <section className={`${styles.section} categories-section`} aria-labelledby="categories-title"><div className={styles.inner}>
       <SectionTitle id="categories-title" eyebrow={text.eyebrow} title={text.title} subtitle={text.subtitle} align="center" />
       {status === 'loading' ? <div className={styles.skeletonGrid} aria-label="Loading categories">{Array.from({ length: 5 }, (_, index) => <Skeleton key={index} variant="rectangular" className={styles.skeleton} />)}</div> : null}
       {status === 'error' ? <div className={styles.state}><ErrorOutlineRoundedIcon /><p>{text.error}</p></div> : null}
@@ -38,3 +37,5 @@ export function CategorySection() {
     </div></section>
   )
 }
+
+

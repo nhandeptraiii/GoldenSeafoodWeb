@@ -3,3 +3,48 @@
 @media(max-width:900px){.footerGrid{grid-template-columns:1fr 1fr}.footerAbout{grid-column:1/3}}
 @media(max-width:700px){.toolbar{min-height:68px;padding:8px 14px;gap:10px}.brand{font-size:.67rem;letter-spacing:.09em}.logo{width:42px;height:42px}.menuButton{display:grid}.languageButton{min-width:68px!important;padding:5px 8px!important;font-size:.68rem!important}.navList{position:absolute;z-index:10;left:0;right:0;top:100%;display:grid;gap:0;padding:8px 14px 18px;background:rgba(255,255,255,.98);border-top:1px solid var(--gs-line);border-bottom:2px solid var(--gs-secondary);box-shadow:0 18px 34px rgba(6,28,46,.14);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .22s ease,transform .22s ease,visibility .22s}.navListOpen{opacity:1;visibility:visible;transform:none}.navLink{width:100%;padding:14px 10px;border-bottom:1px solid var(--gs-line);font-size:.73rem}.navLinkActive{padding-left:16px;border-bottom-color:var(--gs-line);border-left:3px solid var(--gs-secondary);background:var(--gs-gold-soft)}}
 @media(max-width:600px){.footer{padding-top:55px}.footerGrid{grid-template-columns:1fr;gap:42px}.footerAbout{grid-column:auto}.footerBottom{margin-top:45px;flex-direction:column;gap:8px}}
+
+.gs-app .site-header{background:rgba(6,35,56,.94)!important;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(10px)}.gs-app .toolbar{height:84px!important;min-height:84px!important}.gs-app .brand{gap:12px;color:#fff}.gs-app .brand img{height:52px;width:52px;border-radius:50%;object-fit:cover}.gs-app .brand-text{display:flex;flex-direction:column;line-height:1.2}.gs-app .brand-text strong{color:#fff;font-size:1.14rem;font-weight:800;letter-spacing:.01em}.gs-app .brand-text span{color:#d9bb72;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase}.gs-app .navList{gap:0}.gs-app .navLink{color:#e7eef2;font-size:.81rem;font-weight:500;text-transform:none;letter-spacing:0;padding:10px 11px;border:0;border-radius:8px}.gs-app .navLink:hover,.gs-app .navLinkActive{color:#d9bb72;background:rgba(255,255,255,.06)}.gs-app .navLinkActive:after{content:'';position:absolute;left:11px;right:11px;bottom:3px;height:2px;background:#c9a24d}.gs-app .headerActions{gap:14px}.gs-app .icon-btn{position:relative;width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:transparent;color:#fff;font-size:1.1rem;cursor:pointer}.gs-app .badge-count{position:absolute;top:-3px;right:-4px;width:17px;height:17px;display:grid;place-items:center;border-radius:50%;background:#c9a24d;color:#062338;font-size:.62rem}.gs-app .nav-overlay{position:fixed;inset:0;z-index:899;background:rgba(0,0,0,.48);opacity:0;visibility:hidden;transition:.2s}.gs-app .nav-overlay.open{opacity:1;visibility:visible}.gs-app .main-nav .nav-close{display:none}@media(max-width:700px){.gs-app .toolbar{height:68px!important;min-height:68px!important}.gs-app .brand img{height:44px;width:44px}.gs-app .brand-text span{display:none}.gs-app .navList{position:fixed;z-index:901;left:auto;right:0;top:0;bottom:0;width:min(340px,86vw);display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:5px;padding:76px 20px 24px;background:#062338;opacity:1;visibility:visible;transform:translateX(105%);transition:transform .25s}.gs-app .navListOpen{transform:translateX(0)}.gs-app .navLink{padding:13px 14px;border-radius:7px}.gs-app .navLinkActive:after{display:none}.gs-app .menuButton{z-index:902;color:#fff;border-color:rgba(255,255,255,.25);background:transparent}}
+
+.gs-app .footer{background:#062338;border-top:0}.gs-app .footerGrid{grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:40px}.gs-app .footerColumn h2{color:#fff}.gs-app .footerDescription{font-size:.88rem!important;max-width:320px}.gs-app .footerBottom{margin-top:0;padding:22px 0}@media(max-width:900px){.gs-app .footerGrid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.gs-app .footerGrid{grid-template-columns:1fr}}
+/* Header aligned with Golden Seafood reference */
+.gs-app .topbar{font-size:.82rem}.gs-app .topbar .container{max-width:1220px;min-height:38px;padding-left:24px;padding-right:24px}.gs-app .site-header{z-index:900}.gs-app .toolbar{max-width:1220px!important;padding-left:24px!important;padding-right:24px!important}.gs-app .brand{letter-spacing:0}.gs-app .brand img{height:52px;width:auto;border-radius:0;object-fit:contain}.gs-app .navList{flex-wrap:nowrap;justify-content:flex-end;gap:2px}.gs-app .navLink{white-space:nowrap;font-size:clamp(.74rem,.82vw,.86rem);padding:10px clamp(7px,.85vw,13px);border-bottom:0}.gs-app .navLinkActive:after{left:12px;right:12px;bottom:4px}.gs-app .icon-btn{background:rgba(255,255,255,.08);border:0}.gs-app .icon-btn:hover{background:rgba(255,255,255,.16)}.gs-app .badge-count{min-width:18px;height:18px;padding:0 4px}.gs-app .navClose{display:none}.gs-app .footer{padding-top:72px}.gs-app .footerAbout .footer-social{margin-top:20px}.gs-app .footerAbout .footer-social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;margin-right:8px;color:#cfe0ea}.gs-app .footerAbout .footer-social a:hover{background:#c9a24d;color:#062338}
+@media(max-width:1200px){.gs-app .toolbar{height:76px!important;min-height:76px!important}.gs-app .burger{display:flex}.gs-app .navList{position:fixed;top:0;right:-100%;left:auto;bottom:0;width:min(340px,86vw);height:100dvh;z-index:999;background:#062338;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:4px;padding:100px 24px 24px;box-shadow:-10px 0 40px rgba(0,0,0,.3);transition:right .35s cubic-bezier(.22,.61,.36,1);visibility:visible;opacity:1;transform:none}.gs-app .navListOpen{right:0}.gs-app .navLink{font-size:1rem;padding:14px 16px}.gs-app .navLinkActive:after{left:16px;right:16px;bottom:5px}.gs-app .navClose{display:flex;position:absolute;top:22px;right:22px;width:40px;height:40px;align-items:center;justify-content:center;color:#fff;background:rgba(255,255,255,.08);border:0;border-radius:50%}.gs-app .nav-overlay{z-index:998;pointer-events:none}.gs-app .nav-overlay.open{pointer-events:auto}}
+@media(max-width:640px){.gs-app .toolbar{height:68px!important;min-height:68px!important;padding-left:16px!important;padding-right:16px!important}.gs-app .brand img{height:44px}.gs-app .brand-text span{display:none}.gs-app .topbar .container{padding-left:16px;padding-right:16px}}
+/* Final responsive header and page hero alignment */
+.gs-app .nav-overlay { z-index: 998; }
+@media (max-width: 1200px) {
+  .gs-app .site-header { z-index: 1000; }
+  .gs-app .toolbar { height: 76px !important; min-height: 76px !important; }
+  .gs-app .burger { display: grid; }
+  .gs-app .navList { position: fixed; top: 0; right: 0; bottom: 0; left: auto; width: min(360px, 88vw); height: 100dvh; z-index: 1001; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 4px; padding: 92px 24px 24px; background: #062338; box-shadow: -10px 0 40px rgba(0,0,0,.3); visibility: hidden; opacity: 1; transform: translateX(105%); transition: transform .28s ease, visibility .28s; }
+  .gs-app .navListOpen { visibility: visible; transform: translateX(0); }
+  .gs-app .navLink { padding: 14px 16px; font-size: 1rem; }
+  .gs-app .navLinkActive:after { left: 16px; right: 16px; bottom: 5px; }
+  .gs-app .navClose { display: flex; position: absolute; top: 22px; right: 22px; width: 40px; height: 40px; align-items: center; justify-content: center; color: #fff; background: rgba(255,255,255,.08); border: 0; border-radius: 50%; cursor: pointer; }
+  .gs-app .nav-overlay { pointer-events: none; }
+  .gs-app .nav-overlay.open { pointer-events: auto; }
+}
+@media (max-width: 640px) {
+  .gs-app .toolbar { height: 68px !important; min-height: 68px !important; padding-left: 16px !important; padding-right: 16px !important; }
+  .gs-app .brand img { height: 44px; width: auto; }
+  .gs-app .brand-text span { display: none; }
+  .gs-app .topbar .container { padding-left: 16px; padding-right: 16px; }
+}
+/* Header and homepage refinements matching the supplied reference */
+.gs-app .topbar { min-height: 38px; }
+.gs-app .site-header { background: #19384b !important; border-bottom: 1px solid rgba(255,255,255,.07); }
+.gs-app .toolbar { max-width: 1320px !important; height: 84px !important; min-height: 84px !important; gap: 14px; }
+.gs-app .brand { min-width: 300px; gap: 14px; }
+.gs-app .brand img { width: 84px; height: 56px; object-fit: contain; }
+.gs-app .brand-text strong { font-size: 1.12rem; }
+.gs-app .brand-text span { display: block; white-space: nowrap; }
+.gs-app .navList { flex: 1 1 auto; min-width: 0; gap: 2px; justify-content: space-between; }
+.gs-app .navLink { flex: 0 0 auto; padding: 10px 10px; color: #f0f5f8; font-size: clamp(.76rem, .85vw, .9rem); font-weight: 600; text-align: center; }
+.gs-app .headerActions { flex: 0 0 auto; }
+.gs-app .icon-btn { background: rgba(255,255,255,.08); }
+@media (min-width: 1201px) and (max-width: 1400px) {
+  .gs-app .brand { min-width: 270px; }
+  .gs-app .brand img { width: 72px; }
+  .gs-app .navLink { padding-left: 7px; padding-right: 7px; font-size: .75rem; }
+}
