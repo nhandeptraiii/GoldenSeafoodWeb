@@ -1,12 +1,14 @@
-.card { position: relative; min-width: 0; min-height: 270px; padding: 30px 28px 28px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--gs-line); box-shadow: 0 8px 30px rgba(8, 34, 58, .05); transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease; }
-.card:hover { transform: translateY(-8px); border-color: var(--gs-secondary); box-shadow: 0 24px 55px rgba(8, 34, 58, .12); }
-.iconWrap { width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: var(--gs-gold-soft); color: var(--gs-secondary-dark); }
-.iconWrap img { width: 100%; height: 100%; display: block; border-radius: 50%; object-fit: cover; }
-.iconWrap svg { font-size: 2.75rem; }
-.index { position: absolute; right: 26px; top: 25px; margin: 0; color: rgba(8, 34, 58, .2); font-size: .72rem; letter-spacing: .12em; }
-.card h3 { margin: 24px 0 0; color: var(--gs-primary); font-size: 1.25rem; line-height: 1.3; }
-.link { width: fit-content; margin-top: auto; padding-top: 24px; display: inline-flex; align-items: center; gap: 7px; color: var(--gs-primary); font-size: .76rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+.card { position: relative; min-width: 0; min-height: 340px; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 0; border-radius: 14px; color: #fff; background: #062338; box-shadow: 0 8px 24px rgba(10,51,80,.1); transition: transform .28s ease, box-shadow .28s ease; }
+.card::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(6,35,56,.02) 20%, rgba(5,25,40,.9) 100%); pointer-events: none; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(10,51,80,.18); }
+.iconWrap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; border-radius: 0; background: #0a3350; }
+.iconWrap img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform .45s ease; }
+.card:hover .iconWrap img { transform: scale(1.04); }
+.iconWrap svg { display: none; }
+.card h3, .description, .link { position: relative; z-index: 2; margin-left: 26px; margin-right: 26px; }
+.card h3 { margin-top: auto; margin-bottom: 8px; color: #fff; font-size: 1.2rem; line-height: 1.3; }
+.description { margin-top: 0; margin-bottom: 8px; color: #d7e3ea; font-size: .87rem; line-height: 1.55; }
+.link { width: fit-content; margin-top: 0; margin-bottom: 23px; padding-top: 10px; display: inline-flex; align-items: center; gap: 7px; color: #d9bb72; font-size: .82rem; font-weight: 750; }
 .link svg { font-size: 1rem; transition: transform .22s ease; }
 .card:hover .link svg { transform: translateX(4px); }
-@media (max-width: 700px) { .card { min-height: 250px; padding: 26px 22px; } .iconWrap { width: 84px; height: 84px; } }
-@media (max-width: 520px) { .card { min-height: 0; } }
+@media (max-width: 700px) { .card { min-height: 320px; } .card h3, .description, .link { margin-left: 20px; margin-right: 20px; } }

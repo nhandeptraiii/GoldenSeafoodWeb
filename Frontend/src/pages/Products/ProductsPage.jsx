@@ -1,25 +1,29 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Alert, Checkbox, Drawer, Pagination, Skeleton } from '@mui/material'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import { useSearchParams } from 'react-router-dom'
+import { ReferenceMarkup } from '../Reference/ReferenceMarkup'
+import hero from '../Reference/templates/products-hero.html?raw'
+import callout from '../Reference/templates/products-callout.html?raw'
 import { useSelector } from 'react-redux'
 import { ProductCard } from '../../components/ProductCard'
 import { getCategories } from '../../services/category.service'
 import { getProducts } from '../../services/product.service'
+import '../../assets/GoldenSeafoodNew/vendor/bootstrap-icons/bootstrap-icons.min.css'
 import styles from './ProductsPage.module.scss'
 
 const pageSize = 9
 const copy = {
-  vi: { eyebrow: 'Danh mục thủy sản', title: 'Sản phẩm xuất khẩu từ Việt Nam', subtitle: 'Khám phá nguồn hàng được lựa chọn kỹ lưỡng từ các nhà máy đạt chuẩn và đội ngũ QC chuyên trách.', search: 'Tìm theo tên sản phẩm...', filter: 'Bộ lọc sản phẩm', categories: 'Danh mục', all: 'Tất cả sản phẩm', type: 'Trạng thái sản phẩm', results: 'sản phẩm', clear: 'Xóa bộ lọc', empty: 'Không tìm thấy sản phẩm phù hợp.', close: 'Đóng bộ lọc' },
-  en: { eyebrow: 'Seafood catalog', title: 'Export-ready products from Vietnam', subtitle: 'Explore carefully sourced seafood from certified plants, supported by dedicated quality control.', search: 'Search products...', filter: 'Product filters', categories: 'Categories', all: 'All products', type: 'Product type', results: 'products', clear: 'Clear filters', empty: 'No matching products found.', close: 'Close filters' },
+  vi: { eyebrow: 'Danh mục thủy sản đông lạnh', title: 'Sản phẩm của chúng tôi', subtitle: 'Khám phá danh mục thủy sản đông lạnh theo nhóm sản phẩm và loại hình chế biến, sau đó tạo danh sách yêu cầu báo giá.', search: 'Tìm theo tên sản phẩm...', filter: 'Bộ lọc sản phẩm', categories: 'Danh mục chính', all: 'Tất cả sản phẩm', type: 'Loại sản phẩm', results: 'sản phẩm', clear: 'Xóa bộ lọc', empty: 'Không tìm thấy sản phẩm phù hợp.', close: 'Đóng bộ lọc' },
+  en: { eyebrow: 'Frozen Seafood Catalogue', title: 'Our Products', subtitle: 'Browse our frozen seafood catalogue by species group and processing type, then build your inquiry list.', search: 'Search products...', filter: 'Product filters', categories: 'Main categories', all: 'All products', type: 'Product type', results: 'products', clear: 'Clear filters', empty: 'No matching products found.', close: 'Close filters' },
 }
 const typeOptions = [
   { value: 'raw', vi: 'Tươi sống', en: 'Raw' },
   { value: 'cooked', vi: 'Hấp / Chín', en: 'Cooked' },
   { value: 'value_added', vi: 'Tẩm bột / Gia công sâu', en: 'Value-added / Breaded' },
 ]
-
 function FilterPanel({ lang, text, categories, categoryId, setCategoryId, types, toggleType, clearFilters, onClose }) {
   return <aside className={styles.filterPanel}>
     <div className={styles.filterHeading}><span>{text.filter}</span>{onClose ? <button onClick={onClose} aria-label={text.close}><CloseRoundedIcon /></button> : null}</div>
@@ -35,10 +39,12 @@ function FilterPanel({ lang, text, categories, categoryId, setCategoryId, types,
 export function ProductsPage() {
   const lang = useSelector((state) => state.language.current)
   const text = copy[lang]
+  const [searchParams] = useSearchParams()
+  const requestedCategory = searchParams.get('cat') || ''
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
-  const [categoryId, setCategoryId] = useState('')
+  const [categoryId, setCategoryId] = useState(null)
   const [types, setTypes] = useState([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -49,10 +55,12 @@ export function ProductsPage() {
   const filtered = useMemo(() => products.filter((product) => {
     const query = search.trim().toLocaleLowerCase()
     const matchesSearch = !query || [product.name_en, product.name_vi, product.short_desc_en, product.short_desc_vi].some((value) => value?.toLocaleLowerCase().includes(query))
-    const matchesCategory = !categoryId || String(product.category?.id || product.category_id) === String(categoryId)
+    const requested = categories.find((category) => category.slug === requestedCategory)?.id
+    const selected = categoryId === null ? requested : categoryId
+    const matchesCategory = !selected || String(product.category?.id || product.category_id) === String(selected)
     const matchesType = !types.length || types.includes(product.product_type)
     return matchesSearch && matchesCategory && matchesType
-  }), [products, search, categoryId, types])
+  }), [products, search, categoryId, types, categories, requestedCategory])
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const visibleProducts = filtered.slice((page - 1) * pageSize, page * pageSize)
   const selectCategory = (value) => { setCategoryId(value); setPage(1); setMobileFilters(false) }
@@ -61,7 +69,7 @@ export function ProductsPage() {
   const panelProps = { lang, text, categories, categoryId, setCategoryId: selectCategory, types, toggleType, clearFilters }
 
   return <main className={styles.page}>
-    <section className={styles.intro}><div><p>{text.eyebrow}</p><h1>{text.title}</h1><span>{text.subtitle}</span></div></section>
+    <ReferenceMarkup html={hero} />
     <div className={styles.layout}>
       <div className={styles.desktopFilter}><FilterPanel {...panelProps} /></div>
       <section className={styles.catalog}>
@@ -77,6 +85,8 @@ export function ProductsPage() {
         {pages > 1 ? <Pagination page={page} count={pages} onChange={(_, value) => { setPage(value); window.scrollTo({ top: 260, behavior: 'smooth' }) }} color="primary" className={styles.pagination} /> : null}
       </section>
     </div>
+    <ReferenceMarkup html={callout} />
     <Drawer anchor="left" open={mobileFilters} onClose={() => setMobileFilters(false)}><FilterPanel {...panelProps} onClose={() => setMobileFilters(false)} /></Drawer>
   </main>
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Alert, Skeleton } from '@mui/material'
 import { Link, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,10 +13,9 @@ import { getProductBySlug } from '../../services/product.service'
 import styles from './ProductDetailPage.module.scss'
 
 const copy = {
-  vi: { back: 'Tất cả sản phẩm', specs: 'Thông số kỹ thuật', add: 'Thêm vào danh sách báo giá', zoom: 'Rê chuột để phóng to', mixedTitle: 'Giải pháp Container Hỗn Hợp', mixed: 'Bạn đang tìm nguồn cung ứng linh hoạt? Chúng tôi chuyên phối trộn Container Hỗn Hợp (Tôm, Cá, Mực...) nhằm tối ưu chi phí vận chuyển và tồn kho. Liên hệ đội ngũ Sourcing của chúng tôi ngay hôm nay!', contact: 'Liên hệ đội ngũ Sourcing' },
-  en: { back: 'All products', specs: 'Product Specifications', add: 'Add to Inquiry List', zoom: 'Hover to zoom', mixedTitle: 'Mixed Container Solutions', mixed: 'Looking for a flexible supply? We specialize in consolidating Mixed Containers (Shrimp, Fish, Cephalopods) to optimize your inventory and freight costs. Contact our Sourcing Team today!', contact: 'Contact our Sourcing Team' },
+  vi: { back: 'Tất cả sản phẩm', specs: 'Thông số kỹ thuật', add: 'Thêm vào danh sách yêu cầu', zoom: 'Di chuột để phóng to', mixedTitle: 'Giải pháp container hỗn hợp', mixed: 'Bạn đang tìm nguồn cung ứng linh hoạt? Chúng tôi chuyên phối trộn container hỗn hợp (tôm, cá, mực...) nhằm tối ưu chi phí vận chuyển và tồn kho. Liên hệ đội ngũ cung ứng của chúng tôi ngay hôm nay!', contact: 'Liên hệ đội ngũ cung ứng' },
+  en: { back: 'All products', specs: 'Product Specifications', add: 'Add to Inquiry List', zoom: 'Hover to zoom', mixedTitle: 'Mixed Container Solutions', mixed: 'Looking for a flexible supply? We specialize in consolidating mixed containers (shrimp, fish, cephalopods) to optimize inventory and freight costs. Contact our sourcing team today!', contact: 'Contact our Sourcing Team' },
 }
-
 export function ProductDetailPage() {
   const { slug } = useParams()
   const lang = useSelector((state) => state.language.current)
@@ -72,3 +71,4 @@ export function ProductDetailPage() {
     </div>
   </main>
 }
+

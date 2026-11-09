@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import SetMealOutlinedIcon from '@mui/icons-material/SetMealOutlined'
 import { addInquiryItem } from '../redux/slices/inquirySlice'
+import presentation from '../pages/Reference/productPresentation.json'
 import styles from './ProductCard.module.scss'
 
 const typeLabels = { raw: { vi: 'Tươi sống', en: 'Raw' }, cooked: { vi: 'Hấp / Chín', en: 'Cooked' }, value_added: { vi: 'Gia công sâu', en: 'Value-added' } }
@@ -18,14 +19,15 @@ export function ProductCard({ product }) {
   const primaryImage = typeof product.primary_image === 'string'
     ? { image_url: product.primary_image, alt_text: primaryName }
     : product.primary_image || product.images?.find((image) => image.is_primary) || product.images?.[0]
-  const imageUrl = primaryImage?.image_url
+  const reference = presentation[product.slug] || Object.values(presentation).find((item) => item.name.toLowerCase() === product.name_en?.toLowerCase())
+  const imageUrl = reference?.image || primaryImage?.image_url
   const add = () => {
     if (alreadyAdded) { toast.info(lang === 'vi' ? 'Sản phẩm này đã có trong danh sách yêu cầu.' : 'This product is already in your inquiry list.'); return }
     dispatch(addInquiryItem({ product_id: product.id, product_name: primaryName, quantity: 1, specifications: '', notes: '', slug: product.slug, thumbnail_url: imageUrl }))
     toast.success(lang === 'vi' ? `Đã thêm “${primaryName}” vào danh sách yêu cầu.` : `“${primaryName}” was added to your inquiry list.`)
   }
   return <article className={styles.card}>
-    <Link to={`/products/${product.slug}`} className={styles.imageLink} aria-label={primaryName}>{imageUrl ? <img src={imageUrl} alt={primaryImage?.alt_text || primaryName} loading="lazy" decoding="async" /> : <span className={styles.emptyImage}><SetMealOutlinedIcon />{lang === 'vi' ? 'Chưa có hình ảnh' : 'Image coming soon'}</span>}</Link>
-    <div className={styles.content}>{typeLabels[product.product_type] ? <p className={styles.type}>{typeLabels[product.product_type][lang]}</p> : null}<Link to={`/products/${product.slug}`}><h2>{primaryName}</h2><p className={styles.secondaryName}>{secondaryName}</p></Link><div className={styles.actions}><Link to={`/products/${product.slug}`}>{lang === 'vi' ? 'Chi tiết' : 'Details'}<ArrowOutwardRoundedIcon /></Link><button onClick={add}><AddRoundedIcon />{lang === 'vi' ? 'Gửi yêu cầu' : 'Inquire Now'}</button></div></div>
+    <Link to={`/products/${product.slug}`} className={styles.imageLink} aria-label={primaryName}>{typeLabels[product.product_type] && <span className={styles.tag}>{typeLabels[product.product_type][lang]}</span>}{imageUrl ? <img src={imageUrl} alt={primaryImage?.alt_text || primaryName} loading="lazy" decoding="async" /> : <span className={styles.emptyImage}><SetMealOutlinedIcon />{lang === 'vi' ? 'Chưa có hình ảnh' : 'Image coming soon'}</span>}</Link>
+    <div className={styles.content}>{typeLabels[product.product_type] ? <p className={styles.type}>{typeLabels[product.product_type][lang]}</p> : null}<Link to={`/products/${product.slug}`}><h2>{primaryName}</h2><p className={styles.secondaryName}>{reference?.scientific || secondaryName}</p></Link><div className={styles.actions}><Link to={`/products/${product.slug}`}>{lang === 'vi' ? 'Chi tiết' : 'Details'}<ArrowOutwardRoundedIcon /></Link><button onClick={add}><AddRoundedIcon />{lang === 'vi' ? 'Gửi yêu cầu' : 'Add to Inquiry'}</button></div></div>
   </article>
 }
