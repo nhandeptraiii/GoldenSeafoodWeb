@@ -48,3 +48,18 @@
 .intro > div:not(.heroBg) { position: relative; z-index: 1; }
 
 .page{background:#fff}.layout{width:min(1220px,100%);padding:96px 24px;margin:auto;grid-template-columns:270px minmax(0,1fr);gap:40px}.desktopFilter{top:104px}.filterPanel{padding:26px;background:#f5f7f8;border:0!important;border-radius:14px}.filterHeading{display:none}.filterGroup{padding:0 0 26px;border:0}.filterGroup>p{font-size:.8rem;letter-spacing:.07em;color:#0a3350;margin-bottom:14px}.filterGroup>button{padding:10px 12px;border-radius:8px;font-size:.88rem}.filterGroup>.activeCategory{background:#0a3350;color:#fff}.filterGroup small{display:none}.checkRow{font-size:.85rem}.grid{gap:24px}.search{border-radius:8px}.toolbar{margin-bottom:24px}.search input{font-size:.88rem}@media(max-width:1000px) and (min-width:901px){.desktopFilter{display:block}.mobileFilterButton{display:none}}@media(max-width:900px){.layout{grid-template-columns:1fr;padding:64px 24px}.desktopFilter{display:none}.mobileFilterButton{display:flex}}@media(max-width:600px){.grid{grid-template-columns:1fr}}
+
+.layout { max-width:1220px; width:100%; padding:96px 24px; grid-template-columns:260px minmax(0,1fr); gap:34px; }
+.desktopFilter { top:110px; }
+.filterPanel { padding:24px; border:1px solid #e6eaee !important; }
+.filterGroup > p { font-size:.9rem; letter-spacing:normal; text-transform:none; }
+.grid { gap:24px; }
+.customSpec { margin-top:26px; padding-top:22px; border-top:1px solid #e6eaee; }
+.customSpec p { font-size:.85rem; margin-bottom:12px; }
+@media(max-width:980px) { .layout { grid-template-columns:220px minmax(0,1fr); gap:24px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:768px) { .layout { grid-template-columns:1fr; padding:64px 24px; } .desktopFilter { display:none; } .mobileFilterButton { display:flex; } }
+@media(max-width:560px) { .grid { grid-template-columns:1fr; } }
+
+.layout { grid-template-columns:270px minmax(0,1fr); gap:40px; }
+@media(max-width:900px) { .layout { grid-template-columns:1fr; } .desktopFilter { display:none; } .mobileFilterButton { display:flex; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .grid { grid-template-columns:1fr; } }

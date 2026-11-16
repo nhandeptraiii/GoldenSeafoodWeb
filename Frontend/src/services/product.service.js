@@ -5,6 +5,18 @@ export async function getProducts(params = {}) {
   return response.data?.data || { products: [], pagination: null }
 }
 
+// Collect every API page before applying the catalogue's local search/type filters.
+export async function getCatalogueProducts(category = '') {
+  const params = { limit: 50, ...(category ? { category } : {}) }
+  const first = await getProducts(params)
+  const products = [...(first.products || [])]
+  for (let page = 2; page <= (first.pagination?.totalPages || 1); page += 1) {
+    const next = await getProducts({ ...params, page })
+    products.push(...(next.products || []))
+  }
+  return products
+}
+
 export async function getFeaturedProducts() {
   const response = await axiosClient.get('/products/featured')
   return response.data?.data || []

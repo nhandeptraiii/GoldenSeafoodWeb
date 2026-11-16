@@ -2,7 +2,6 @@
 import { Link } from 'react-router-dom'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import SetMealOutlinedIcon from '@mui/icons-material/SetMealOutlined'
-import styles from './CategoryCard.module.scss'
 import shrimpImage from '../../assets/GoldenSeafoodNew/img/product-shrimp.jpg'
 import cephalopodImage from '../../assets/GoldenSeafoodNew/img/products/octopus-whole.jpg'
 import marineFishImage from '../../assets/GoldenSeafoodNew/img/product-tuna.jpg'
@@ -51,15 +50,13 @@ export function CategoryCard({ category, lang, labels }) {
   }
   const descriptionKey = categoryImageRules.find(({ terms }) => terms.some((term) => categoryText.includes(term)))
   const descriptionType = descriptionKey?.terms[0]
-  const description = descriptions[descriptionType === 'shrimp' ? 'shrimp' : descriptionType === 'squid' ? 'cephalopod' : descriptionType === 'crab' ? 'crab' : descriptionType === 'marine' ? 'marine' : descriptionType === 'freshwater' ? 'freshwater' : descriptionType === 'frog' ? 'frog' : descriptionType === 'shellfish' ? 'shellfish' : descriptionType ? 'processing' : '']
+  const fallbackDescription = descriptions[descriptionType === 'shrimp' ? 'shrimp' : descriptionType === 'squid' ? 'cephalopod' : descriptionType === 'crab' ? 'crab' : descriptionType === 'marine' ? 'marine' : descriptionType === 'freshwater' ? 'freshwater' : descriptionType === 'frog' ? 'frog' : descriptionType === 'shellfish' ? 'shellfish' : descriptionType ? 'processing' : '']
+  const description = (lang === 'vi' ? category.description_vi : category.description_en) || fallbackDescription
   return (
-    <article className={styles.card}>
-      <div className={styles.iconWrap}>{coverImage && !iconFailed ? <img src={coverImage} alt="" loading="lazy" onError={() => setIconFailed(true)} /> : <SetMealOutlinedIcon aria-hidden="true" />}</div>
-      <h3>{name}</h3>
-      {description ? <p className={styles.description}>{description}</p> : null}
-      <Link to="/products" className={styles.link} aria-label={`${labels.details}: ${name}`}>{labels.details}<ArrowForwardRoundedIcon /></Link>
-    </article>
+    <Link to={`/products?${new URLSearchParams({ cat: category.slug })}`} className="cat-card" aria-label={`${labels.details}: ${name}`}>
+      <div className="cat-img">{coverImage ? <img src={iconFailed ? matchedImage || shellfishImage : coverImage} alt="" loading="lazy" onError={() => setIconFailed(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <SetMealOutlinedIcon aria-hidden="true" />}</div>
+      <div className="cat-overlay" />
+      <div className="cat-body"><h3>{name}</h3>{description ? <p>{description}</p> : null}<span className="cat-link">{labels.details}<ArrowForwardRoundedIcon /></span></div>
+    </Link>
   )
 }
-
-

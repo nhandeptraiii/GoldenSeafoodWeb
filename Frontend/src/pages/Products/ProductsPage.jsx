@@ -3,14 +3,14 @@ import { Alert, Checkbox, Drawer, Pagination, Skeleton } from '@mui/material'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ReferenceMarkup } from '../Reference/ReferenceMarkup'
 import hero from '../Reference/templates/products-hero.html?raw'
 import callout from '../Reference/templates/products-callout.html?raw'
 import { useSelector } from 'react-redux'
 import { ProductCard } from '../../components/ProductCard'
 import { getCategories } from '../../services/category.service'
-import { getProducts } from '../../services/product.service'
+import { getCatalogueProducts } from '../../services/product.service'
 import '../../assets/GoldenSeafoodNew/vendor/bootstrap-icons/bootstrap-icons.min.css'
 import styles from './ProductsPage.module.scss'
 
@@ -32,6 +32,7 @@ function FilterPanel({ lang, text, categories, categoryId, setCategoryId, types,
       {categories.map((category) => <button key={category.id} className={String(categoryId) === String(category.id) ? styles.activeCategory : ''} onClick={() => setCategoryId(category.id)}><span>{lang === 'vi' ? category.name_vi : category.name_en}</span><small>{category.productCount ?? 0}</small></button>)}
     </div>
     <div className={styles.filterGroup}><p>{text.type}</p>{typeOptions.map((item) => <label className={styles.checkRow} key={item.value}><Checkbox size="small" checked={types.includes(item.value)} onChange={() => toggleType(item.value)} /><span>{lang === 'vi' ? item.vi : item.en}</span></label>)}</div>
+    <div className={styles.customSpec}><p>{lang === 'vi' ? 'Cần quy cách chưa có trong danh mục?' : 'Need a specification not listed here?'}</p><Link to="/contact" className="btn btn-ocean btn-block btn-sm">{lang === 'vi' ? 'Yêu cầu quy cách riêng' : 'Request Custom Spec'}</Link></div>
     {(categoryId || types.length) ? <button className={styles.clearButton} onClick={clearFilters}>{text.clear}</button> : null}
   </aside>
 }
@@ -39,33 +40,61 @@ function FilterPanel({ lang, text, categories, categoryId, setCategoryId, types,
 export function ProductsPage() {
   const lang = useSelector((state) => state.language.current)
   const text = copy[lang]
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const requestedCategory = searchParams.get('cat') || ''
   const [categories, setCategories] = useState([])
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
-  const [categoryId, setCategoryId] = useState(null)
+  const categoryId = categories.find((category) => category.slug === requestedCategory)?.id || ''
   const [types, setTypes] = useState([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [mobileFilters, setMobileFilters] = useState(false)
 
-  useEffect(() => { Promise.all([getCategories(), getProducts({ limit: 50 })]).then(([categoryData, productData]) => { setCategories(categoryData); setProducts(productData.products || []) }).catch((err) => setError(err.message)).finally(() => setLoading(false)) }, [])
+  useEffect(() => {
+    let active = true
+    getCategories().then((data) => { if (active) setCategories(data) }).catch((err) => { if (active) setError(err.message) })
+    return () => { active = false }
+  }, [])
+  useEffect(() => {
+    let active = true
+    const load = async () => {
+      setLoading(true)
+      setError('')
+      try {
+        const data = await getCatalogueProducts(requestedCategory)
+        if (active) { setProducts(data); setPage(1) }
+      } catch (err) {
+        if (active) { setProducts([]); setError(err.message) }
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+    load()
+    return () => { active = false }
+  }, [requestedCategory])
   const filtered = useMemo(() => products.filter((product) => {
     const query = search.trim().toLocaleLowerCase()
     const matchesSearch = !query || [product.name_en, product.name_vi, product.short_desc_en, product.short_desc_vi].some((value) => value?.toLocaleLowerCase().includes(query))
-    const requested = categories.find((category) => category.slug === requestedCategory)?.id
-    const selected = categoryId === null ? requested : categoryId
-    const matchesCategory = !selected || String(product.category?.id || product.category_id) === String(selected)
     const matchesType = !types.length || types.includes(product.product_type)
-    return matchesSearch && matchesCategory && matchesType
-  }), [products, search, categoryId, types, categories, requestedCategory])
+    return matchesSearch && matchesType
+  }), [products, search, types])
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const visibleProducts = filtered.slice((page - 1) * pageSize, page * pageSize)
-  const selectCategory = (value) => { setCategoryId(value); setPage(1); setMobileFilters(false) }
+  const selectCategory = (value) => {
+    const category = categories.find((item) => String(item.id) === String(value))
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (category) next.set('cat', category.slug)
+      else next.delete('cat')
+      return next
+    })
+    setPage(1)
+    setMobileFilters(false)
+  }
   const toggleType = (value) => { setTypes((current) => current.includes(value) ? current.filter((type) => type !== value) : [...current, value]); setPage(1) }
-  const clearFilters = () => { setCategoryId(''); setTypes([]); setPage(1) }
+  const clearFilters = () => { selectCategory(''); setTypes([]); setPage(1) }
   const panelProps = { lang, text, categories, categoryId, setCategoryId: selectCategory, types, toggleType, clearFilters }
 
   return <main className={styles.page}>
