@@ -21,3 +21,15 @@
 .success, .alert { margin-top: 18px; }
 .success a { margin-top: 14px; padding: 11px 13px; display: flex; align-items: center; justify-content: center; gap: 7px; background: #25d366; color: #083f20; font-weight: 800; font-size: .76rem; }
 @media (max-width: 560px) { .drawer { padding: 24px 18px; } .twoColumns { grid-template-columns: 1fr; } }
+
+.drawer { width:min(420px,92vw); padding:24px; background:#fff; color:#0a3350; }
+.drawer h2 { font-size:1.1rem; }
+.drawer header p { display:none; }
+.drawer header button { width:34px; height:34px; border-radius:50%; background:#f5f7f8; display:grid; place-items:center; }
+.empty { border:0; padding:60px 20px; margin:0; color:#788592; }
+.empty i { font-size:2.4rem; color:#e6eaee; display:block; margin-bottom:14px; }
+.items article { padding:14px 0; border:0; border-bottom:1px solid #e6eaee; }
+.items img { width:56px; height:56px; border-radius:8px; }
+.items strong { font-size:.9rem; }
+.form input,.form textarea { border-radius:8px; font-size:.85rem; }
+.submit { border-radius:100px; background:linear-gradient(135deg,#d9bb72,#b8923f); color:#062338; text-transform:none; letter-spacing:0; font-size:.95rem; font-weight:600; }

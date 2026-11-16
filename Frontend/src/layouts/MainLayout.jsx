@@ -16,21 +16,23 @@ export function MainLayout() {
   const [basketOpen, setBasketOpen] = useState(false)
   useEffect(() => {
     document.documentElement.lang = lang
-    document.documentElement.classList.toggle('lang-vi', lang === 'vi')
-    document.querySelectorAll('[data-lang-btn]').forEach((el) => el.classList.toggle('active', el.dataset.langBtn === lang))
-    document.querySelectorAll('.main-nav a').forEach((el) => el.classList.toggle('active', el.getAttribute('href') === pathname))
+    localStorage.setItem('gs_lang', lang)
+    document.querySelectorAll('[data-lang-btn]').forEach((button) => button.classList.toggle('active', button.dataset.langBtn === lang))
+    document.querySelectorAll('.main-nav a').forEach((link) => link.classList.toggle('active', link.getAttribute('href') === pathname || (pathname.startsWith('/products/') && link.getAttribute('href') === '/products')))
     document.querySelector('.main-nav')?.classList.remove('open')
     document.querySelector('.nav-overlay')?.classList.remove('open')
+    document.documentElement.classList.toggle('lang-vi', lang === 'vi')
     document.title = `${(document.querySelector(`h1 [data-lang="${lang}"]`) || document.querySelector('h1'))?.textContent.trim() || 'Golden Seafood'} | Golden Seafood`
     window.scrollTo({ top: 0 })
   }, [lang, pathname])
   useEffect(() => {
     const badge = document.querySelector('.badge-count')
-    if (badge) badge.textContent = count
+    if (badge) { badge.textContent = count; badge.style.display = count ? 'flex' : 'none' }
   }, [count])
   useEffect(() => {
     const scroll = () => {
-      document.querySelector('.site-header')?.classList.toggle('scrolled', window.scrollY > 20)
+      const header = document.querySelector('.site-header')
+      if (header) header.style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.18)' : 'none'
       document.querySelector('.float-btn.top')?.classList.toggle('show', window.scrollY > 500)
     }
     scroll()

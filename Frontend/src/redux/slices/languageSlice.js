@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  current: 'vi',
+  current: localStorage.getItem('gs_lang') === 'vi' ? 'vi' : 'en',
 }
 
 const languageSlice = createSlice({

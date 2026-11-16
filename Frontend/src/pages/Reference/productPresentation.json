@@ -1,272 +1,562 @@
 {
   "shrimp-raw-pd": {
-    "image": "/reference-assets/img/products/shrimp-raw-pd.jpg",
+    "image": "/golden-seafood/img/products/shrimp-raw-pd.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Raw PD Vannamei Shrimp"
+    "name": "Raw PD Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Thịt Tươi (PD)",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-raw-pto": {
-    "image": "/reference-assets/img/products/shrimp-raw-pto.jpg",
+    "image": "/golden-seafood/img/products/shrimp-raw-pto.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Raw PTO Vannamei Shrimp"
+    "name": "Raw PTO Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Thịt Còn Đuôi Tươi (PTO)",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-cooked-pd": {
-    "image": "/reference-assets/img/products/shrimp-cooked-pd.jpg",
+    "image": "/golden-seafood/img/products/shrimp-cooked-pd.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Cooked PD Vannamei Shrimp"
+    "name": "Cooked PD Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Thịt Hấp (PD)",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-cooked-pto": {
-    "image": "/reference-assets/img/products/shrimp-cooked-pto.jpg",
+    "image": "/golden-seafood/img/products/shrimp-cooked-pto.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Cooked PTO Vannamei Shrimp"
+    "name": "Cooked PTO Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Thịt Còn Đuôi Hấp (PTO)",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-nobashi": {
-    "image": "/reference-assets/img/products/shrimp-nobashi.jpg",
+    "image": "/golden-seafood/img/products/shrimp-nobashi.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Nobashi Vannamei Shrimp"
+    "name": "Nobashi Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Nobashi",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-skewer": {
-    "image": "/reference-assets/img/products/shrimp-skewer.jpg",
+    "image": "/golden-seafood/img/products/shrimp-skewer.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Skewer Vannamei Shrimp"
+    "name": "Skewer Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Xiên Que",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-sushi": {
-    "image": "/reference-assets/img/products/shrimp-sushi.jpg",
+    "image": "/golden-seafood/img/products/shrimp-sushi.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Sushi Vannamei Shrimp"
+    "name": "Sushi Vannamei Shrimp",
+    "name_vi": "Tôm Thẻ Sushi",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-torpedo": {
-    "image": "/reference-assets/img/products/shrimp-torpedo.jpg",
+    "image": "/golden-seafood/img/products/shrimp-torpedo.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Torpedo Shrimp"
+    "name": "Torpedo Shrimp",
+    "name_vi": "Tôm Torpedo (Duỗi Thẳng)",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-coconut-butterfly": {
-    "image": "/reference-assets/img/products/shrimp-coconut-butterfly.jpg",
+    "image": "/golden-seafood/img/products/shrimp-coconut-butterfly.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Breaded Coconut Butterfly Shrimp"
+    "name": "Breaded Coconut Butterfly Shrimp",
+    "name_vi": "Tôm Xẻ Bướm Tẩm Dừa",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-crispy-bubble": {
-    "image": "/reference-assets/img/products/shrimp-crispy-bubble.jpg",
+    "image": "/golden-seafood/img/products/shrimp-crispy-bubble.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Crispy Bubble Shrimp"
+    "name": "Crispy Bubble Shrimp",
+    "name_vi": "Tôm Bong Bóng Giòn",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-donuts": {
-    "image": "/reference-assets/img/products/shrimp-donuts.jpg",
+    "image": "/golden-seafood/img/products/shrimp-donuts.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Donuts Shrimp"
+    "name": "Donuts Shrimp",
+    "name_vi": "Tôm Donut",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-lychee-ball": {
-    "image": "/reference-assets/img/products/shrimp-lychee-ball.jpg",
+    "image": "/golden-seafood/img/products/shrimp-lychee-ball.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Lychee Shrimp Ball"
+    "name": "Lychee Shrimp Ball",
+    "name_vi": "Chả Tôm Viên Vải Thiều",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-volcano-cheese": {
-    "image": "/reference-assets/img/products/shrimp-volcano-cheese.jpg",
-    "scientific": "Litopenaeus vannamei",
-    "name": "Volcano Cheese Shrimp"
+    "image": "/golden-seafood/img/products/shrimp-volcano-cheese.jpg",
+    "scientific": "Penaeus monodon",
+    "name": "Volcano Cheese Shrimp",
+    "name_vi": "Tôm Núi Lửa Nhân Phô Mai",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-popcorn": {
-    "image": "/reference-assets/img/products/shrimp-popcorn.jpg",
+    "image": "/golden-seafood/img/products/shrimp-popcorn.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Popcorn Shrimp"
+    "name": "Popcorn Shrimp",
+    "name_vi": "Tôm Popcorn Tẩm Bột",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "shrimp-ball": {
-    "image": "/reference-assets/img/products/shrimp-ball.jpg",
+    "image": "/golden-seafood/img/products/shrimp-ball.jpg",
     "scientific": "Litopenaeus vannamei",
-    "name": "Shrimp Ball"
+    "name": "Shrimp Ball",
+    "name_vi": "Chả Tôm Viên",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
+  },
+  "shrimp-eco-tiger": {
+    "image": "/golden-seafood/img/products/shrimp-eco-tiger.jpg",
+    "scientific": "Penaeus monodon — <span data-lang=\"en\">eco / organic mangrove-shrimp farming</span><span data-lang=\"vi\">nuôi quảng canh sinh thái dưới tán rừng ngập mặn</span>",
+    "name": "Eco-Certified Black Tiger Shrimp",
+    "name_vi": "Tôm Sú Sinh Thái",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
+  },
+  "shrimp-giant-prawn": {
+    "image": "/golden-seafood/img/products/shrimp-giant-prawn.jpg",
+    "scientific": "Macrobrachium rosenbergii",
+    "name": "Giant Freshwater Prawn",
+    "name_vi": "Tôm Càng Xanh",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
+  },
+  "shrimp-dried": {
+    "image": "/golden-seafood/img/products/shrimp-dried.jpg",
+    "scientific": "Litopenaeus vannamei / Penaeus monodon — <span data-lang=\"en\">sun-dried</span><span data-lang=\"vi\">phơi/sấy khô tự nhiên</span>",
+    "name": "Dried Shrimp",
+    "name_vi": "Tôm Khô",
+    "category_en": "Shrimp",
+    "category_vi": "Tôm"
   },
   "marine-tuna-loin": {
-    "image": "/reference-assets/img/products/tuna-loin.jpg",
+    "image": "/golden-seafood/img/products/tuna-loin.jpg",
     "scientific": "Thunnus albacares",
-    "name": "Yellowfin Tuna Loin"
+    "name": "Yellowfin Tuna Loin",
+    "name_vi": "Cá Ngừ Vây Vàng Phi Lê Loin",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-tuna-saku": {
-    "image": "/reference-assets/img/products/tuna-saku.jpg",
+    "image": "/golden-seafood/img/products/tuna-saku.jpg",
     "scientific": "Thunnus albacares",
-    "name": "Yellowfin Tuna Saku"
+    "name": "Yellowfin Tuna Saku",
+    "name_vi": "Cá Ngừ Vây Vàng Saku",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-tuna-steak": {
-    "image": "/reference-assets/img/products/tuna-steak.jpg",
+    "image": "/golden-seafood/img/products/tuna-steak.jpg",
     "scientific": "Thunnus albacares",
-    "name": "Yellowfin Tuna Steak"
+    "name": "Yellowfin Tuna Steak",
+    "name_vi": "Cá Ngừ Vây Vàng Cắt Lát",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-tuna-cube": {
-    "image": "/reference-assets/img/products/tuna-cube.jpg",
+    "image": "/golden-seafood/img/products/tuna-cube.jpg",
     "scientific": "Thunnus albacares",
-    "name": "Yellowfin Tuna Cube"
+    "name": "Yellowfin Tuna Cube",
+    "name_vi": "Cá Ngừ Vây Vàng Cắt Hạt Lựu",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-mahi-fillet": {
-    "image": "/reference-assets/img/products/mahi-fillet.jpg",
+    "image": "/golden-seafood/img/products/mahi-fillet.jpg",
     "scientific": "Coryphaena hippurus",
-    "name": "Mahi Mahi Fillet"
+    "name": "Mahi Mahi Fillet",
+    "name_vi": "Cá Dũa Phi Lê",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-mahi-portion": {
-    "image": "/reference-assets/img/products/mahi-portion.jpg",
+    "image": "/golden-seafood/img/products/mahi-portion.jpg",
     "scientific": "Coryphaena hippurus",
-    "name": "Mahi Mahi Portion"
+    "name": "Mahi Mahi Portion",
+    "name_vi": "Cá Dũa Cắt Khúc",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-wahoo-portion": {
-    "image": "/reference-assets/img/products/wahoo-portion.jpg",
+    "image": "/golden-seafood/img/products/wahoo-portion.jpg",
     "scientific": "Acanthocybium solandri",
-    "name": "Wahoo Portion"
+    "name": "Wahoo Portion",
+    "name_vi": "Cá Thu Ngừ Cắt Khúc",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-wahoo-steak": {
-    "image": "/reference-assets/img/products/wahoo-steak.jpg",
+    "image": "/golden-seafood/img/products/wahoo-steak.jpg",
     "scientific": "Acanthocybium solandri",
-    "name": "Wahoo Steak"
+    "name": "Wahoo Steak",
+    "name_vi": "Cá Thu Ngừ Cắt Lát",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-swordfish-portion": {
-    "image": "/reference-assets/img/products/swordfish-portion.jpg",
+    "image": "/golden-seafood/img/products/swordfish-portion.jpg",
     "scientific": "Xiphias gladius",
-    "name": "Swordfish Portion"
+    "name": "Swordfish Portion",
+    "name_vi": "Cá Kiếm Cắt Khúc",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-swordfish-cube": {
-    "image": "/reference-assets/img/products/swordfish-cube.jpg",
+    "image": "/golden-seafood/img/products/swordfish-cube.jpg",
     "scientific": "Xiphias gladius",
-    "name": "Swordfish Cube"
+    "name": "Swordfish Cube",
+    "name_vi": "Cá Kiếm Cắt Hạt Lựu",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-marlin-cube": {
-    "image": "/reference-assets/img/products/marlin-cube.jpg",
+    "image": "/golden-seafood/img/products/marlin-cube.jpg",
     "scientific": "Makaira spp.",
-    "name": "Marlin Cube"
+    "name": "Marlin Cube",
+    "name_vi": "Cá Cờ Cắt Hạt Lựu",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-red-snapper-fillet": {
-    "image": "/reference-assets/img/products/red-snapper-fillet.jpg",
+    "image": "/golden-seafood/img/products/red-snapper-fillet.jpg",
     "scientific": "Lutjanus spp.",
-    "name": "Red Snapper Fillet"
+    "name": "Red Snapper Fillet",
+    "name_vi": "Cá Hồng Phi Lê",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "marine-red-mullet-fillet": {
-    "image": "/reference-assets/img/products/red-mullet-fillet.jpg",
+    "image": "/golden-seafood/img/products/red-mullet-fillet.jpg",
     "scientific": "Mullidae spp.",
-    "name": "Red Mullet Fillet"
+    "name": "Red Mullet Fillet",
+    "name_vi": "Cá Phèn Phi Lê",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
+  },
+  "marine-surimi": {
+    "image": "/golden-seafood/img/products/marine-surimi.jpg",
+    "scientific": "<span data-lang=\"en\">Frozen surimi block — raw material for crab stick / fish ball manufacturing</span><span data-lang=\"vi\">Chả cá surimi đông lạnh — nguyên liệu sản xuất que cua, chả cá viên</span>",
+    "name": "Surimi (Fish Paste)",
+    "name_vi": "Surimi (Chả Cá Biển)",
+    "category_en": "Marine Fish",
+    "category_vi": "Cá Biển"
   },
   "fresh-pangasius-portion": {
-    "image": "/reference-assets/img/products/pangasius-portion.jpg",
+    "image": "/golden-seafood/img/products/pangasius-portion.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Portion"
+    "name": "Pangasius Portion",
+    "name_vi": "Cá Tra Cắt Khúc",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-loin": {
-    "image": "/reference-assets/img/products/pangasius-loin.jpg",
+    "image": "/golden-seafood/img/products/pangasius-loin.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Loin"
+    "name": "Pangasius Loin",
+    "name_vi": "Cá Tra Phi Lê Loin",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-cube": {
-    "image": "/reference-assets/img/products/pangasius-cube.jpg",
+    "image": "/golden-seafood/img/products/pangasius-cube.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Cube"
+    "name": "Pangasius Cube",
+    "name_vi": "Cá Tra Cắt Hạt Lựu",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-block": {
-    "image": "/reference-assets/img/products/pangasius-block.jpg",
+    "image": "/golden-seafood/img/products/pangasius-block.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Block"
+    "name": "Pangasius Block",
+    "name_vi": "Cá Tra Block Công Nghiệp",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-fold": {
-    "image": "/reference-assets/img/products/pangasius-fold-portion.jpg",
+    "image": "/golden-seafood/img/products/pangasius-fold-portion.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Fold Portion"
+    "name": "Pangasius Fold Portion",
+    "name_vi": "Cá Tra Cắt Khúc Gấp",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-popcorn": {
-    "image": "/reference-assets/img/products/pangasius-popcorn.jpg",
+    "image": "/golden-seafood/img/products/pangasius-popcorn.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Pangasius Popcorn"
+    "name": "Pangasius Popcorn",
+    "name_vi": "Cá Tra Popcorn Tẩm Bột",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-marinated": {
-    "image": "/reference-assets/img/products/pangasius-marinated.jpg",
+    "image": "/golden-seafood/img/products/pangasius-marinated.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Marinated Pangasius"
+    "name": "Marinated Pangasius",
+    "name_vi": "Cá Tra Tẩm Ướp Gia Vị",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-pangasius-battered": {
-    "image": "/reference-assets/img/products/pangasius-battered.jpg",
+    "image": "/golden-seafood/img/products/pangasius-battered.jpg",
     "scientific": "Pangasianodon hypophthalmus",
-    "name": "Battered Pangasius"
+    "name": "Battered Pangasius",
+    "name_vi": "Cá Tra Tẩm Bột Chiên Xù",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "fresh-tilapia-fillet": {
-    "image": "/reference-assets/img/products/tilapia-fillet.jpg",
+    "image": "/golden-seafood/img/products/tilapia-fillet.jpg",
     "scientific": "Oreochromis niloticus",
-    "name": "Tilapia Fillet"
+    "name": "Tilapia Fillet",
+    "name_vi": "Cá Rô Phi Phi Lê",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
+  },
+  "fresh-pangasius-skin": {
+    "image": "/golden-seafood/img/products/fresh-pangasius-skin.jpg",
+    "scientific": "Pangasianodon hypophthalmus",
+    "name": "Pangasius Skin",
+    "name_vi": "Da Cá Tra",
+    "category_en": "Freshwater Fish",
+    "category_vi": "Cá Nước Ngọt"
   },
   "ceph-cuttlefish-whole": {
-    "image": "/reference-assets/img/products/cuttlefish-whole.jpg",
+    "image": "/golden-seafood/img/products/cuttlefish-whole.jpg",
     "scientific": "Sepia pharaonis",
-    "name": "Whole Cleaned Cuttlefish"
+    "name": "Whole Cleaned Cuttlefish",
+    "name_vi": "Mực Nang Nguyên Con Làm Sạch",
+    "category_en": "Squid & Octopus",
+    "category_vi": "Mực & Bạch Tuộc"
   },
   "ceph-octopus-whole": {
-    "image": "/reference-assets/img/products/octopus-whole.jpg",
+    "image": "/golden-seafood/img/products/octopus-whole.jpg",
     "scientific": "Octopus membranaceus",
-    "name": "Whole Cleaned Baby Octopus"
+    "name": "Whole Cleaned Baby Octopus",
+    "name_vi": "Bạch Tuộc Nguyên Con Làm Sạch",
+    "category_en": "Squid & Octopus",
+    "category_vi": "Mực & Bạch Tuộc"
   },
   "ceph-cuttlefish-pineapple": {
-    "image": "/reference-assets/img/products/cuttlefish-pineapple.jpg",
+    "image": "/golden-seafood/img/products/cuttlefish-pineapple.jpg",
     "scientific": "Sepia pharaonis",
-    "name": "Pineapple Cuttlefish"
+    "name": "Pineapple Cuttlefish",
+    "name_vi": "Mực Nang Cắt Trái Khóm",
+    "category_en": "Squid & Octopus",
+    "category_vi": "Mực & Bạch Tuộc"
   },
   "ceph-cuttlefish-sushi": {
-    "image": "/reference-assets/img/products/cuttlefish-sushi.jpg",
+    "image": "/golden-seafood/img/products/cuttlefish-sushi.jpg",
     "scientific": "Sepia pharaonis",
-    "name": "Raw Cuttlefish Sushi"
+    "name": "Raw Cuttlefish Sushi",
+    "name_vi": "Mực Nang Sushi",
+    "category_en": "Squid & Octopus",
+    "category_vi": "Mực & Bạch Tuộc"
+  },
+  "ceph-dried-squid": {
+    "image": "/golden-seafood/img/products/ceph-dried-squid.jpg",
+    "scientific": "Loligo spp. — <span data-lang=\"en\">whole sun-dried</span><span data-lang=\"vi\">sấy khô nguyên con</span>",
+    "name": "Dried Squid",
+    "name_vi": "Khô Mực",
+    "category_en": "Squid & Octopus",
+    "category_vi": "Mực & Bạch Tuộc"
   },
   "crab-scored-claw": {
-    "image": "/reference-assets/img/products/crab-scored-claw.jpg",
+    "image": "/golden-seafood/img/products/crab-scored-claw.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Snow Crab Scored Claw"
+    "name": "Golden Crack Claw",
+    "name_vi": "Càng Cua Tuyết Khứa Vỏ",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-breaded-claw": {
-    "image": "/reference-assets/img/products/crab-breaded-claw.jpg",
+    "image": "/golden-seafood/img/products/crab-breaded-claw.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Breaded Snow Crab Claw"
+    "name": "Treasure Crab Claw",
+    "name_vi": "Càng Cua Tuyết Tẩm Bột",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-peeled-claw": {
-    "image": "/reference-assets/img/products/crab-peeled-claw.jpg",
+    "image": "/golden-seafood/img/products/crab-peeled-claw.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Peeled Snow Crab Claw"
+    "name": "Arctic Ice Claw",
+    "name_vi": "Càng Cua Tuyết Bóc Vỏ",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-snow-combo": {
-    "image": "/reference-assets/img/products/crab-snow-combo.jpg",
+    "image": "/golden-seafood/img/products/crab-snow-combo.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Snow Crab Combo"
+    "name": "Snow Crab Combo",
+    "name_vi": "Cua Tuyết Combo",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-snow-leg-meat": {
-    "image": "/reference-assets/img/products/crab-snow-leg-meat.jpg",
+    "image": "/golden-seafood/img/products/crab-snow-leg-meat.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Snow Crab Leg Meat"
+    "name": "Snow Crab Leg Meat",
+    "name_vi": "Thịt Chân Cua Tuyết",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-snow-meat": {
-    "image": "/reference-assets/img/products/crab-snow-meat.jpg",
+    "image": "/golden-seafood/img/products/crab-snow-meat.jpg",
     "scientific": "Chionoecetes opilio",
-    "name": "Snow Crab Meat"
+    "name": "Snow Crab Meat",
+    "name_vi": "Thịt Cua Tuyết",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-dungness-combo": {
-    "image": "/reference-assets/img/products/crab-dungness-combo.jpg",
+    "image": "/golden-seafood/img/products/crab-dungness-combo.jpg",
     "scientific": "Metacarcinus magister",
-    "name": "Dungness Crab Combo"
+    "name": "Dungness Crab Combo",
+    "name_vi": "Cua Dungness Combo",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-dungness-fry-leg": {
-    "image": "/reference-assets/img/products/crab-dungness-fry-leg.jpg",
+    "image": "/golden-seafood/img/products/crab-dungness-fry-leg.jpg",
     "scientific": "Metacarcinus magister",
-    "name": "Dungness Crab Fry Leg"
+    "name": "Dungness Crab Fry Leg",
+    "name_vi": "Chân Cua Dungness Để Chiên",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "crab-dungness-white-meat": {
-    "image": "/reference-assets/img/products/crab-dungness-white-meat.jpg",
+    "image": "/golden-seafood/img/products/crab-dungness-white-meat.jpg",
     "scientific": "Metacarcinus magister",
-    "name": "Dungness Crab White Meat"
+    "name": "Dungness Crab White Meat",
+    "name_vi": "Thịt Trắng Cua Dungness",
+    "category_en": "Crab",
+    "category_vi": "Cua, Ghẹ"
   },
   "frog-yoga": {
-    "image": "/reference-assets/img/products/frog-yoga.jpg",
+    "image": "/golden-seafood/img/products/frog-yoga.jpg",
     "scientific": "Rana rugulosa",
-    "name": "Yoga Frog Leg"
+    "name": "Yoga Frog Leg",
+    "name_vi": "Đùi Ếch Yoga",
+    "category_en": "Frog",
+    "category_vi": "Ếch"
   },
   "frog-classic": {
-    "image": "/reference-assets/img/products/frog-classic.jpg",
+    "image": "/golden-seafood/img/products/frog-classic.jpg",
     "scientific": "Rana rugulosa",
-    "name": "Classic Frog Leg"
+    "name": "Classic Frog Leg",
+    "name_vi": "Đùi Ếch Classic",
+    "category_en": "Frog",
+    "category_vi": "Ếch"
   },
   "frog-battered": {
-    "image": "/reference-assets/img/products/frog-battered.jpg",
+    "image": "/golden-seafood/img/products/frog-battered.jpg",
     "scientific": "Rana rugulosa",
-    "name": "Crispy Battered Frog Leg"
+    "name": "Crispy Battered Frog Leg",
+    "name_vi": "Đùi Ếch Tẩm Bột Giòn",
+    "category_en": "Frog",
+    "category_vi": "Ếch"
   },
   "shell-scallop-meat": {
-    "image": "/reference-assets/img/products/scallop-meat.jpg",
-    "scientific": "Amusium pleuronectes",
-    "name": "Scallop Meat"
+    "image": "/golden-seafood/img/products/scallop-meat.jpg",
+    "scientific": "Mizuhopecten yesoensis",
+    "name": "Scallop Meat",
+    "name_vi": "Thịt Sò Điệp",
+    "category_en": "Shellfish",
+    "category_vi": "Nhuyễn Thể Có Vỏ"
+  },
+  "shell-scallop-half-shell": {
+    "image": "/golden-seafood/img/products/scallop-half-shell.jpg",
+    "scientific": "Mizuhopecten yesoensis",
+    "name": "Scallop Half Shell",
+    "name_vi": "Sò Điệp Nửa Vỏ",
+    "category_en": "Shellfish",
+    "category_vi": "Nhuyễn Thể Có Vỏ"
+  },
+  "shell-cooked-clam": {
+    "image": "/golden-seafood/img/products/cooked-clam.jpg",
+    "scientific": "Meretrix spp.",
+    "name": "Cooked Clam",
+    "name_vi": "Nghêu Hấp",
+    "category_en": "Shellfish",
+    "category_vi": "Nhuyễn Thể Có Vỏ"
+  },
+  "other-fish-meal": {
+    "image": "/golden-seafood/img/products/other-fish-meal.jpg",
+    "scientific": "<span data-lang=\"en\">High-protein animal feed ingredient, made from fish processing by-products</span><span data-lang=\"vi\">Nguyên liệu thức ăn chăn nuôi giàu đạm, sản xuất từ phụ phẩm chế biến thủy sản</span>",
+    "name": "Fish Meal / Fish Powder",
+    "name_vi": "Bột Cá",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-bread": {
+    "image": "/golden-seafood/img/products/other-bread.jpg",
+    "scientific": "<span data-lang=\"en\">Ready-to-bake frozen bread, bulk carton packing</span><span data-lang=\"vi\">Bánh mì đông lạnh nướng sẵn, đóng thùng số lượng lớn</span>",
+    "name": "Frozen Par-Baked Bread",
+    "name_vi": "Bánh Mì Đông Lạnh",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-rice-paper": {
+    "image": "/golden-seafood/img/products/other-rice-paper.jpg",
+    "scientific": "<span data-lang=\"en\">Traditional sun-dried / dew-cured rice paper</span><span data-lang=\"vi\">Bánh tráng truyền thống, phơi nắng / phơi sương</span>",
+    "name": "Rice Paper",
+    "name_vi": "Bánh Tráng",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-dried-mango": {
+    "image": "/golden-seafood/img/products/other-dried-mango.jpg",
+    "scientific": "<span data-lang=\"en\">Soft-dried mango slices, no added sugar option available</span><span data-lang=\"vi\">Xoài sấy dẻo, có tùy chọn không thêm đường</span>",
+    "name": "Dried Mango",
+    "name_vi": "Xoài Sấy",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-dried-jackfruit": {
+    "image": "/golden-seafood/img/products/other-dried-jackfruit.jpg",
+    "scientific": "<span data-lang=\"en\">Vacuum-fried jackfruit chips, crispy texture</span><span data-lang=\"vi\">Mít sấy chiên chân không, giòn xốp</span>",
+    "name": "Dried Jackfruit",
+    "name_vi": "Mít Sấy",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-dried-durian": {
+    "image": "/golden-seafood/img/products/other-dried-durian.jpg",
+    "scientific": "<span data-lang=\"en\">Freeze-dried / vacuum-fried durian, retains natural flavor</span><span data-lang=\"vi\">Sầu riêng sấy thăng hoa / chiên chân không, giữ hương vị tự nhiên</span>",
+    "name": "Dried Durian",
+    "name_vi": "Sầu Riêng Sấy",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-sugarcane-juice": {
+    "image": "/golden-seafood/img/products/other-sugarcane-juice.jpg",
+    "scientific": "<span data-lang=\"en\">Frozen fresh-pressed sugarcane juice, pouch / bottle packing</span><span data-lang=\"vi\">Nước mía ép tươi cấp đông, đóng túi / chai</span>",
+    "name": "Sugarcane Juice",
+    "name_vi": "Nước Mía",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
+  },
+  "other-coconut": {
+    "image": "/golden-seafood/img/products/other-coconut.jpg",
+    "scientific": "<span data-lang=\"en\">Fresh husked coconut, export carton packing</span><span data-lang=\"vi\">Dừa trái tươi đã gọt vỏ, đóng thùng xuất khẩu</span>",
+    "name": "Whole Coconut",
+    "name_vi": "Dừa Trái",
+    "category_en": "Dried, Bakery & Agri Products",
+    "category_vi": "Nông Sản & Thực Phẩm Khác"
   }
 }

@@ -2,13 +2,13 @@ import { createTheme } from '@mui/material/styles'
 
 export const appTheme = createTheme({
   palette: {
-    primary: { main: '#0B2942', dark: '#061C2E', light: '#36556E' },
-    secondary: { main: '#C9A45C', dark: '#A47D35', light: '#DDC084' },
-    background: { default: '#f5f7f9', paper: '#ffffff' },
-    text: { primary: '#142B3D', secondary: '#667581' },
+    primary: { main: '#0a3350', dark: '#062338', light: '#36556E' },
+    secondary: { main: '#c9a24d', dark: '#b8923f', light: '#d9bb72' },
+    background: { default: '#ffffff', paper: '#ffffff' },
+    text: { primary: '#1b2530', secondary: '#788592' },
     success: { main: '#2f855a' },
   },
-  shape: { borderRadius: 8 },
+  shape: { borderRadius: 14 },
   typography: {
     fontFamily: "Inter, 'Segoe UI', Arial, sans-serif",
     h1: { fontWeight: 800, letterSpacing: '-0.035em' },
@@ -17,7 +17,7 @@ export const appTheme = createTheme({
     button: { textTransform: 'none', fontWeight: 700 },
   },
   components: {
-    MuiCssBaseline: { styleOverrides: { body: { background: '#f5f7f9' } } },
+    MuiCssBaseline: { styleOverrides: { body: { background: '#ffffff' } } },
     MuiButton: { styleOverrides: { root: { borderRadius: 3, padding: '10px 20px', letterSpacing: '.035em' } } },
     MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
     MuiChip: { styleOverrides: { root: { borderRadius: 3 } } },
