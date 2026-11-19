@@ -38,7 +38,6 @@ export function ProductDetailPage() {
   const primaryName = lang === 'vi' ? product.name_vi : product.name_en
   const secondaryName = lang === 'vi' ? product.name_en : product.name_vi
   const primaryDescription = lang === 'vi' ? product.description_vi || product.short_desc_vi : product.description_en || product.short_desc_en
-  const secondaryDescription = lang === 'vi' ? product.short_desc_en : product.short_desc_vi
   const images = product.images || []
   const primaryImageUrl = images.find((image) => image.is_primary)?.image_url || images[0]?.image_url || ''
   const addToInquiry = () => {
@@ -62,7 +61,7 @@ export function ProductDetailPage() {
         <section className={styles.details}>
           <p className={styles.category}>{lang === 'vi' ? product.category?.name_vi : product.category?.name_en}</p>
           <h1>{primaryName}</h1><p className={styles.secondaryName}>{secondaryName}</p>
-          <div className={styles.description}><p>{primaryDescription}</p>{secondaryDescription ? <p>{secondaryDescription}</p> : null}</div>
+          {primaryDescription ? <div className={styles.description}><p>{primaryDescription}</p></div> : null}
           <button className={styles.inquiryButton} onClick={addToInquiry}><AddRoundedIcon />{text.add}</button>
           <section className={styles.specifications}><h2>{text.specs}</h2><div className={styles.specTable}>{product.specifications?.map((spec) => <div className={styles.specRow} key={spec.id || `${spec.spec_key_en}-${spec.spec_value}`}><div><strong>{lang === 'vi' ? spec.spec_key_vi : spec.spec_key_en}</strong><small>{lang === 'vi' ? spec.spec_key_en : spec.spec_key_vi}</small></div><p>{spec.spec_value}</p></div>)}</div></section>
         </section>
