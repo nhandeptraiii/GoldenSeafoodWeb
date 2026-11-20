@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Checkbox, Drawer, Pagination, Skeleton } from '@mui/material'
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
@@ -51,6 +51,23 @@ export function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [mobileFilters, setMobileFilters] = useState(false)
+  const filterRef = useRef(null)
+
+  useEffect(() => {
+    const panel = filterRef.current
+    if (!panel) return
+    // Let a tall filter scroll fully into view before its bottom becomes sticky.
+    const updatePosition = () => {
+      const headerHeight = document.querySelector('.site-header')?.getBoundingClientRect().height || 84
+      const top = Math.min(headerHeight + 20, window.innerHeight - panel.offsetHeight - 24)
+      panel.style.setProperty('--filter-sticky-top', `${top}px`)
+    }
+    const observer = new ResizeObserver(updatePosition)
+    observer.observe(panel)
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    return () => { observer.disconnect(); window.removeEventListener('resize', updatePosition) }
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -81,7 +98,8 @@ export function ProductsPage() {
     return matchesSearch && matchesType
   }), [products, search, types])
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize))
-  const visibleProducts = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const showAllProducts = !requestedCategory
+  const visibleProducts = showAllProducts ? filtered : filtered.slice((page - 1) * pageSize, page * pageSize)
   const selectCategory = (value) => {
     const category = categories.find((item) => String(item.id) === String(value))
     setSearchParams((current) => {
@@ -100,7 +118,7 @@ export function ProductsPage() {
   return <main className={styles.page}>
     <ReferenceMarkup html={hero} />
     <div className={styles.layout}>
-      <div className={styles.desktopFilter}><FilterPanel {...panelProps} /></div>
+      <div ref={filterRef} className={styles.desktopFilter}><FilterPanel {...panelProps} /></div>
       <section className={styles.catalog}>
         <div className={styles.toolbar}>
           <div className={styles.search}><SearchRoundedIcon /><input value={search} onChange={(event) => { setSearch(event.target.value); setPage(1) }} placeholder={text.search} aria-label={text.search} /></div>
@@ -111,7 +129,7 @@ export function ProductsPage() {
         {loading ? <div className={styles.grid}>{Array.from({ length: 6 }, (_, index) => <Skeleton key={index} variant="rectangular" className={styles.skeleton} />)}</div> : null}
         {!loading && visibleProducts.length ? <div className={styles.grid}>{visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}</div> : null}
         {!loading && !visibleProducts.length && !error ? <div className={styles.empty}>{text.empty}</div> : null}
-        {pages > 1 ? <Pagination page={page} count={pages} onChange={(_, value) => { setPage(value); window.scrollTo({ top: 260, behavior: 'smooth' }) }} color="primary" className={styles.pagination} /> : null}
+        {!showAllProducts && pages > 1 ? <Pagination page={page} count={pages} onChange={(_, value) => { setPage(value); window.scrollTo({ top: 260, behavior: 'smooth' }) }} color="primary" className={styles.pagination} /> : null}
       </section>
     </div>
     <ReferenceMarkup html={callout} />
